@@ -2,225 +2,362 @@
 
 {% block content %}
 <style>
-    /* HEADER DE SECCIÓN */
-    .section-header { margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 15px; display: flex; justify-content: space-between; align-items: flex-end; }
-    .section-title { font-size: 24px; font-weight: 700; color: #111; text-transform: uppercase; margin: 0; }
-    .section-subtitle { font-size: 14px; color: #666; }
+    /* --- ESTRUCTURA DE PÁGINA (SIDEBAR + CONTENIDO) --- */
+    .shop-container { display: flex; gap: 30px; align-items: flex-start; margin-top: 20px; }
+    .shop-sidebar { width: 260px; flex-shrink: 0; background: white; border: 1px solid #e5e5e5; padding: 25px; border-radius: 4px; }
+    .shop-main { flex: 1; }
 
-    /* GRID ROBUSTO */
-    .grid { 
-        display: grid; 
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); 
-        gap: 30px; 
-    }
-
-    /* TARJETA DE PRODUCTO */
-    .product-card { 
-        background: white; 
-        border: 1px solid #e0e0e0; 
-        display: flex; 
-        flex-direction: column; 
-        transition: all 0.3s ease; 
-        position: relative;
-        overflow: hidden;
-    }
+    /* --- ESTILOS DEL SIDEBAR (FILTROS) --- */
+    .filter-group { margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #eee; }
+    .filter-group:last-child { border-bottom: none; }
+    .filter-title { font-size: 14px; font-weight: 800; text-transform: uppercase; margin-bottom: 15px; color: #111; letter-spacing: 0.5px; }
     
-    .product-card:hover { 
-        border-color: #333; 
-        box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
+    .cat-list li { 
+        margin-bottom: 10px; font-size: 13px; color: #555; cursor: pointer; 
+        transition: 0.2s; display: flex; align-items: center; justify-content: space-between;
     }
+    .cat-list li:hover { color: var(--brand-red); font-weight: 600; }
+    .cat-list li i { font-size: 10px; color: #ccc; }
 
-    /* Imagen con Zoom suave */
+    /* Slider visual de precio */
+    .price-range-visual { width: 100%; height: 4px; background: #ddd; position: relative; margin: 20px 0; }
+    .price-knob { width: 16px; height: 16px; background: var(--brand-red); border-radius: 50%; position: absolute; top: -6px; right: 0; cursor: pointer; }
+    .price-labels { display: flex; justify-content: space-between; font-size: 12px; color: #666; font-weight: bold; }
+
+    /* --- GRID DE PRODUCTOS --- */
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 25px; }
+
+    /* --- TARJETA DE PRODUCTO --- */
+    .product-card { 
+        background: white; border: 1px solid #e0e0e0; border-radius: 4px;
+        display: flex; flex-direction: column; transition: all 0.3s ease; 
+        position: relative; overflow: hidden; cursor: pointer;
+    }
+    .product-card:hover { border-color: #999; box-shadow: 0 10px 25px rgba(0,0,0,0.08); transform: translateY(-2px); }
+    
     .img-box { 
-        height: 250px; 
-        padding: 20px; 
-        background: white; 
-        position: relative; 
-        overflow: hidden; 
-        border-bottom: 1px solid #f4f4f4;
+        height: 240px; padding: 20px; background: white; position: relative; 
+        display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #f4f4f4;
     }
     .img-box img { 
-        width: 100%; 
-        height: 100%; 
-        object-fit: contain; 
-        transition: transform 0.4s ease; 
+        max-width: 100%; max-height: 100%; object-fit: contain; 
+        transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); 
     }
-    .product-card:hover .img-box img { transform: scale(1.05); }
+    .product-card:hover .img-box img { transform: scale(1.08); }
 
-    /* Etiquetas (Nuevo/Oferta) - Visual Only */
-    .badge { position: absolute; top: 10px; left: 10px; background: var(--brand-red); color: white; font-size: 10px; font-weight: bold; padding: 4px 8px; text-transform: uppercase; }
-
-    /* Info */
-    .info { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
-    .cat-label { font-size: 11px; text-transform: uppercase; color: #888; letter-spacing: 1px; margin-bottom: 5px; font-weight: 600; }
-    .prod-name { font-size: 15px; font-weight: 700; color: #111; margin-bottom: 10px; line-height: 1.4; font-family: 'Open Sans', sans-serif; height: 42px; overflow: hidden; }
+    .info { padding: 18px; flex-grow: 1; display: flex; flex-direction: column; text-align: left; }
+    .cat-tag { font-size: 10px; font-weight: 700; color: #888; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 0.5px; }
+    .prod-title { font-size: 15px; font-weight: 700; color: #111; margin-bottom: 8px; line-height: 1.4; height: 42px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
     
-    .price-block { margin-top: auto; padding-top: 15px; }
-    .price-usd { font-size: 18px; font-weight: 800; color: var(--brand-red); font-family: 'Montserrat', sans-serif; }
-    .price-cop { font-size: 12px; color: #999; margin-top: 2px; }
+    /* Estrellas */
+    .star-rating { color: #e3b46d; font-size: 11px; margin-bottom: 12px; }
+    
+    .price-section { margin-top: auto; border-top: 1px solid #f9f9f9; padding-top: 10px; }
+    .usd-price { font-size: 18px; font-weight: 800; color: #111; font-family: 'Montserrat', sans-serif; }
+    .cop-price { font-size: 11px; color: #777; font-weight: 500; }
 
-    /* Botón Oculto que aparece en Hover (Desktop) */
-    .card-actions { 
-        margin-top: 15px; 
-        opacity: 0; 
-        transform: translateY(10px); 
-        transition: 0.3s; 
-    }
-    .product-card:hover .card-actions { opacity: 1; transform: translateY(0); }
-    .btn-view { 
-        display: block; width: 100%; text-align: center; 
-        background: #111; color: white; padding: 10px; 
-        font-size: 12px; font-weight: 700; text-transform: uppercase; 
-        cursor: pointer; letter-spacing: 1px;
-    }
-    .btn-view:hover { background: var(--brand-red); }
-
-    /* MODAL MEJORADO */
-    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; padding: 20px; backdrop-filter: blur(2px); align-items: center; justify-content: center; }
+    /* --- MODAL AVANZADO (ESTILO AL FLAHERTY'S) --- */
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); z-index: 5000; padding: 10px; align-items: center; justify-content: center; backdrop-filter: blur(3px); }
     .modal-content { 
-        background: white; width: 100%; max-width: 1000px; height: auto; max-height: 90vh; 
-        display: grid; grid-template-columns: 55% 45%; 
-        box-shadow: 0 20px 50px rgba(0,0,0,0.2); 
-        position: relative; overflow: hidden;
+        background: white; width: 100%; max-width: 1150px; height: 90vh; 
+        display: flex; flex-direction: column; border-radius: 4px; overflow: hidden;
+        box-shadow: 0 25px 50px rgba(0,0,0,0.3);
     }
     
-    .modal-gallery { background: #f8f9fa; padding: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; overflow-y: auto;}
-    .main-display { max-width: 100%; max-height: 400px; object-fit: contain; margin-bottom: 20px; mix-blend-mode: multiply; }
-    .thumbs-row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
-    .thumb-img { width: 60px; height: 60px; border: 2px solid #ddd; object-fit: cover; cursor: pointer; transition: 0.2s; background: white; }
-    .thumb-img.active { border-color: var(--brand-red); }
+    /* Header Modal */
+    .modal-head { padding: 20px 30px; border-bottom: 1px solid #eee; position: relative; background: white; }
+    .close-btn { position: absolute; top: 20px; right: 25px; font-size: 28px; cursor: pointer; color: #999; line-height: 1; transition: 0.2s; }
+    .close-btn:hover { color: var(--brand-red); }
     
-    .modal-details { padding: 40px; display: flex; flex-direction: column; overflow-y: auto; }
-    .modal-cat { color: #888; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
-    .modal-title { font-size: 26px; font-weight: 700; margin-bottom: 15px; line-height: 1.2; }
-    .modal-price { font-size: 24px; color: var(--brand-red); font-weight: 700; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 20px; }
+    /* Body Dividido */
+    .modal-body { display: grid; grid-template-columns: 55% 45%; flex: 1; overflow-y: auto; }
     
-    .modal-specs { color: #555; line-height: 1.6; font-size: 14px; margin-bottom: 30px; white-space: pre-line; }
-    
-    .modal-actions button { width: 100%; padding: 15px; font-size: 14px; }
-    .close-modal { position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; color: #999; z-index: 10; transition: 0.2s; }
-    .close-modal:hover { color: #000; }
+    /* Galería (Izquierda) */
+    .modal-gallery { background: #fff; padding: 40px; display: flex; flex-direction: column; align-items: center; border-right: 1px solid #eee; }
+    .main-img-container { width: 100%; height: 400px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+    .main-img-display { max-width: 100%; max-height: 100%; object-fit: contain; }
+    .thumbs-container { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+    .thumb { width: 70px; height: 70px; border: 1px solid #ddd; padding: 5px; cursor: pointer; object-fit: contain; opacity: 0.7; transition: 0.2s; }
+    .thumb.active, .thumb:hover { border-color: #333; opacity: 1; }
 
-    @media (max-width: 768px) {
-        .card-actions { opacity: 1; transform: translateY(0); } /* Siempre visible en móvil */
-        .modal-content { grid-template-columns: 1fr; overflow-y: auto; }
-        .modal-gallery { height: auto; padding: 20px; }
-        .main-display { height: 250px; }
+    /* Info (Derecha) */
+    .modal-details { padding: 40px; background: white; }
+    .m-brand { color: #666; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; margin-bottom: 5px; }
+    .m-title { font-size: 26px; font-weight: 800; line-height: 1.2; margin-bottom: 10px; color: #111; font-family: 'Montserrat', sans-serif; }
+    .m-sku { font-size: 13px; color: #888; margin-bottom: 20px; font-family: monospace; }
+    
+    .m-price { font-size: 32px; font-weight: 800; color: var(--brand-red); font-family: 'Montserrat', sans-serif; margin-bottom: 5px; }
+    .m-cop { font-size: 14px; color: #666; margin-bottom: 25px; font-weight: 600; }
+    
+    .stock-badge { display: inline-block; background: #e6f4ea; color: #1e7e34; padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: 700; margin-bottom: 25px; border: 1px solid #c3e6cb; }
+
+    /* Acciones de Compra */
+    .qty-row { display: flex; align-items: center; margin-bottom: 20px; gap: 15px; }
+    .qty-box { display: flex; border: 1px solid #ccc; height: 45px; }
+    .qty-btn { width: 40px; border: none; background: #f8f8f8; font-weight: bold; cursor: pointer; font-size: 16px; }
+    .qty-input { width: 50px; text-align: center; border: none; border-left: 1px solid #eee; border-right: 1px solid #eee; font-weight: bold; font-size: 16px; }
+
+    .action-row { display: flex; gap: 15px; margin-bottom: 30px; }
+    .btn-add { flex: 2; background: #e3b46d; color: black; border: none; font-weight: 800; text-transform: uppercase; font-size: 14px; cursor: pointer; transition: 0.2s; padding: 0 20px; display: flex; align-items: center; justify-content: center; gap: 10px; font-family: 'Montserrat', sans-serif; height: 50px; }
+    .btn-add:hover { background: #c99a50; }
+    .btn-wish { flex: 1; background: white; border: 2px solid #ddd; color: #555; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; transition: 0.2s; height: 50px; }
+    .btn-wish:hover { border-color: #333; color: #333; }
+
+    /* Fake "Comprados Juntos" */
+    .fbt-box { background: #f9f9f9; padding: 20px; border: 1px dashed #ddd; margin-top: 20px; }
+    .fbt-head { font-size: 12px; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; }
+    .fbt-imgs { display: flex; align-items: center; gap: 10px; opacity: 0.7; }
+    
+    @media (max-width: 900px) {
+        .shop-container { flex-direction: column; }
+        .shop-sidebar { width: 100%; display: none; /* Ocultar sidebar en móvil para simplificar */ }
+        .modal-body { grid-template-columns: 1fr; }
+        .modal-gallery { border-right: none; border-bottom: 1px solid #eee; padding: 20px; }
+        .main-img-container { height: 250px; }
+        .modal-content { height: 100%; max-height: 100%; border-radius: 0; }
     }
 </style>
 
-<div class="section-header">
-    <div>
-        <h2 class="section-title">{{ t.products_title | default('Catálogo') }}</h2>
-        <span class="section-subtitle">Mostrando {{ products|length }} resultados</span>
-    </div>
+<div class="section-header" style="border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 20px;">
+    <h2 style="font-size: 22px; font-weight: 800; text-transform: uppercase; margin: 0;">Catálogo General</h2>
+    <span style="font-size: 13px; color: #777;">Equipamiento táctico de alto rendimiento</span>
 </div>
 
-<div class="grid">
-    {% for p in products %}
-    <article class="product-card" data-cat="{{ p.category|lower }}" onclick="openModal({{ p.id }})">
-        {% if loop.index % 2 == 0 %}<span class="badge">OFERTA</span>{% endif %} <div class="img-box">
-            <img src="{{ p.images[0] if p.images else 'https://via.placeholder.com/300?text=No+Image' }}" alt="{{ p.name }}">
+<div class="shop-container">
+    
+    <aside class="shop-sidebar">
+        <div class="filter-group">
+            <h4 class="filter-title">Categorías</h4>
+            <ul class="cat-list">
+                <li onclick="window.location.href='/?cat=ofertas'">Ofertas Especiales <i class="fas fa-chevron-right"></i></li>
+                <li onclick="window.location.href='/?cat=escenarios'">Escenarios <i class="fas fa-chevron-right"></i></li>
+                <li onclick="window.location.href='/?cat=armas'">Armas de Entrenamiento <i class="fas fa-chevron-right"></i></li>
+                <li onclick="window.location.href='/?cat=kits'">Kits de Tiro <i class="fas fa-chevron-right"></i></li>
+                <li onclick="window.location.href='/?cat=simuladores'">Simuladores <i class="fas fa-chevron-right"></i></li>
+            </ul>
         </div>
-        <div class="info">
-            <span class="cat-label">{{ p.category }}</span>
-            <h3 class="prod-name">{{ p.name }}</h3>
-            <div class="price-block">
-                <div class="price-usd">${{ "{:,.2f}".format(p.price_usd) }} USD</div>
-                <div class="price-cop">Aprox. COP ${{ "{:,.0f}".format(p.price_cop) }}</div>
-            </div>
-            <div class="card-actions">
-                <div class="btn-view">{{ t.details }}</div>
-            </div>
-        </div>
-    </article>
-    {% else %}
-    <div style="grid-column: 1/-1; padding: 50px; text-align: center; background: white; border: 1px dashed #ccc;">
-        <h3>No se encontraron productos</h3>
-        <p>Intenta seleccionar otra categoría.</p>
-    </div>
-    {% endfor %}
-</div>
 
-<div class="modal" id="modal">
-    <div class="modal-content">
-        <span class="close-modal" onclick="closeModal()">&times;</span>
-        
-        <div class="modal-gallery">
-            <img src="" id="mImg" class="main-display">
-            <div class="thumbs-row" id="mThumbs"></div>
+        <div class="filter-group">
+            <h4 class="filter-title">Filtrar por Precio</h4>
+            <div class="price-labels">
+                <span>$10 USD</span>
+                <span>$5,000+ USD</span>
+            </div>
+            <div class="price-range-visual">
+                <div class="price-knob"></div>
+            </div>
+            <button style="width: 100%; background: #222; color: white; border: none; padding: 10px; font-weight: bold; font-size: 12px; cursor: pointer;">APLICAR FILTRO</button>
         </div>
-        
-        <div class="modal-details">
-            <span id="mCat" class="modal-cat"></span>
-            <h2 id="mTitle" class="modal-title"></h2>
-            <div id="mPrice" class="modal-price"></div>
-            
-            <div style="font-weight: bold; margin-bottom: 10px; font-size: 13px;">DESCRIPCIÓN & ESPECIFICACIONES</div>
-            <p id="mSpecs" class="modal-specs"></p>
-            
-            <div class="modal-actions" style="margin-top: auto;">
-                <button class="btn-primary" style="width: 100%;">{{ t.add }} <i class="fas fa-shopping-cart" style="margin-left: 10px;"></i></button>
-                <div style="text-align: center; margin-top: 10px; font-size: 12px; color: #888;">
-                    <i class="fas fa-shield-alt"></i> Garantía ALPHA | <i class="fas fa-shipping-fast"></i> Envío Asegurado
+
+        <div class="filter-group">
+            <h4 class="filter-title">Estado</h4>
+            <label style="display: block; font-size: 13px; margin-bottom: 8px; color: #555;">
+                <input type="checkbox" checked> En Stock (Entrega Inmediata)
+            </label>
+            <label style="display: block; font-size: 13px; color: #555;">
+                <input type="checkbox"> Novedades
+            </label>
+        </div>
+    </aside>
+
+    <main class="shop-main">
+        <div class="grid">
+            {% for p in products %}
+            <article class="product-card" data-cat="{{ p.category|lower }}" data-id="{{ p.id }}" onclick="openModal({{ p.id }})">
+                <div class="img-box">
+                    <img 
+                        src="{{ p.images[0] if p.images else 'https://via.placeholder.com/300x300?text=ALPHA' }}" 
+                        alt="{{ p.name }}"
+                        loading="lazy"
+                        decoding="async"
+                    >
                 </div>
+                <div class="info">
+                    <span class="cat-tag">{{ p.category }}</span>
+                    <h3 class="prod-title">{{ p.name }}</h3>
+                    <div class="star-rating" id="stars-grid-{{ p.id }}"></div>
+                    
+                    <div class="price-section">
+                        <div class="usd-price">${{ "{:,.2f}".format(p.price_usd) }}</div>
+                        <div class="cop-price">COP ${{ "{:,.0f}".format(p.price_cop) }}</div>
+                    </div>
+                </div>
+            </article>
+            {% else %}
+            <div style="grid-column: 1/-1; padding: 50px; text-align: center; border: 2px dashed #eee;">
+                <h3>No hay productos disponibles en esta categoría.</h3>
+                <a href="/" style="color: var(--brand-red); font-weight: bold;">Ver todo el catálogo</a>
+            </div>
+            {% endfor %}
+        </div>
+    </main>
+</div>
+
+<div class="modal" id="productModal">
+    <div class="modal-content">
+        <div class="modal-head">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <div style="font-size: 14px; font-weight: bold; color: #111;">VISTA RÁPIDA DE PRODUCTO</div>
+        </div>
+        
+        <div class="modal-body">
+            <div class="modal-gallery">
+                <div class="main-img-container">
+                    <img src="" id="mMainImg" class="main-img-display">
+                </div>
+                <div class="thumbs-container" id="mThumbs">
+                    </div>
+            </div>
+
+            <div class="modal-details">
+                <div class="m-brand" id="mCat">CATEGORÍA</div>
+                <h2 class="m-title" id="mTitle">Nombre del Producto</h2>
+                
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                    <div class="star-rating" id="mStars" style="font-size: 14px;"></div>
+                    <span style="font-size: 12px; color: #666; text-decoration: underline;">Leer reseñas (0)</span>
+                </div>
+
+                <div class="m-sku" id="mSku">SKU: 00000</div>
+                
+                <div class="m-price" id="mPriceUSD">$0.00</div>
+                <div class="m-cop" id="mPriceCOP">COP $0</div>
+
+                <div class="stock-badge"><i class="fas fa-check-circle"></i> DISPONIBLE EN INVENTARIO</div>
+
+                <p id="mSpecs" style="font-size: 14px; color: #555; line-height: 1.6; margin-bottom: 25px; white-space: pre-line;"></p>
+
+                <div class="qty-row">
+                    <span style="font-size: 13px; font-weight: bold;">CANTIDAD:</span>
+                    <div class="qty-box">
+                        <button class="qty-btn" onclick="updateQty(-1)">-</button>
+                        <input type="text" class="qty-input" value="1" id="qtyInput" readonly>
+                        <button class="qty-btn" onclick="updateQty(1)">+</button>
+                    </div>
+                </div>
+
+                <div class="action-row">
+                    <button class="btn-add"><i class="fas fa-shopping-cart"></i> AÑADIR AL CARRITO</button>
+                    <button class="btn-wish"><i class="far fa-heart"></i> LISTA DE DESEOS</button>
+                </div>
+
+                <div style="font-size: 24px; color: #ccc; margin-bottom: 20px;">
+                    <i class="fab fa-cc-visa"></i> <i class="fab fa-cc-mastercard"></i> <i class="fab fa-cc-amex"></i>
+                </div>
+
+                <div class="fbt-box">
+                    <div class="fbt-head">Frecuentemente comprados juntos:</div>
+                    <div class="fbt-imgs">
+                        <img src="https://via.placeholder.com/50" style="border:1px solid #ddd;">
+                        <span>+</span>
+                        <img src="https://via.placeholder.com/50" style="border:1px solid #ddd;">
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
 </div>
 
 <script>
+    // --- DATABASE JS ---
     const productsDB = {};
     {% for p in products %}
     productsDB[{{ p.id }}] = {
+        id: {{ p.id }},
         name: {{ p.name | tojson }},
         cat: {{ p.category | tojson }},
-        specs: {{ p.specs | default('Sin descripción disponible.') | tojson }},
+        specs: {{ p.specs | default('Sin descripción detallada.') | tojson }},
         usd: {{ "{:,.2f}".format(p.price_usd) | tojson }},
+        cop: {{ "{:,.0f}".format(p.price_cop) | tojson }},
         images: {{ p.images | tojson }}
     };
     {% endfor %}
 
-    const modal = document.getElementById('modal');
-    const mImg = document.getElementById('mImg');
+    // --- SISTEMA DE ESTRELLAS ALEATORIAS (DETERMINISTA) ---
+    function getStars(id) {
+        const ratings = [4, 4.5, 5];
+        // Usar el ID para elegir siempre la misma calificación para el mismo producto
+        const index = id % ratings.length;
+        const rating = ratings[index];
+        
+        let html = '';
+        for(let i=1; i<=5; i++) {
+            if(i <= rating) html += '<i class="fas fa-star"></i>';
+            else if(i === rating + 0.5) html += '<i class="fas fa-star-half-alt"></i>';
+            else html += '<i class="far fa-star" style="color:#ddd;"></i>';
+        }
+        return html;
+    }
+
+    // Inicializar estrellas en el Grid
+    document.addEventListener("DOMContentLoaded", () => {
+        for (const [id, p] of Object.entries(productsDB)) {
+            const el = document.getElementById(`stars-grid-${id}`);
+            if(el) el.innerHTML = getStars(id);
+        }
+    });
+
+    // --- LÓGICA DEL MODAL ---
+    const modal = document.getElementById('productModal');
+    const mMainImg = document.getElementById('mMainImg');
+    const qtyInput = document.getElementById('qtyInput');
 
     function openModal(id) {
         const p = productsDB[id];
         if(!p) return;
 
-        document.getElementById('mTitle').innerText = p.name;
-        document.getElementById('mCat').innerText = p.cat;
-        document.getElementById('mSpecs').innerText = p.specs;
-        document.getElementById('mPrice').innerText = `$${p.usd} USD`;
+        // Reset Cantidad
+        qtyInput.value = 1;
 
-        const thumbs = document.getElementById('mThumbs');
-        thumbs.innerHTML = '';
+        // Llenar Textos
+        document.getElementById('mTitle').innerText = p.name;
+        document.getElementById('mCat').innerText = p.cat + " / ALPHA GEAR";
+        document.getElementById('mSku').innerText = `SKU: ALPHA-${1000 + p.id}`;
+        document.getElementById('mPriceUSD').innerText = `$${p.usd}`;
+        document.getElementById('mPriceCOP').innerText = `Aprox. COP $${p.cop}`;
+        document.getElementById('mSpecs').innerText = p.specs;
+        document.getElementById('mStars').innerHTML = getStars(p.id);
+
+        // Lógica de Imágenes
+        const mThumbs = document.getElementById('mThumbs');
+        mThumbs.innerHTML = '';
         
         if(p.images && p.images.length > 0) {
-            mImg.src = p.images[0];
-            p.images.forEach((url, index) => {
+            mMainImg.src = p.images[0];
+            p.images.forEach((url, idx) => {
                 const t = document.createElement('img');
                 t.src = url;
-                t.className = 'thumb-img' + (index === 0 ? ' active' : '');
+                t.className = `thumb ${idx === 0 ? 'active' : ''}`;
                 t.onclick = () => {
-                    mImg.src = url;
-                    document.querySelectorAll('.thumb-img').forEach(x => x.classList.remove('active'));
+                    mMainImg.src = url;
+                    document.querySelectorAll('.thumb').forEach(x => x.classList.remove('active'));
                     t.classList.add('active');
                 };
-                thumbs.appendChild(t);
+                mThumbs.appendChild(t);
             });
         } else {
-            mImg.src = 'https://via.placeholder.com/300';
+            mMainImg.src = 'https://via.placeholder.com/400x400?text=No+Image';
         }
 
         modal.style.display = 'flex';
-        document.body.style.overflow = 'hidden'; // Evitar scroll de fondo
+        document.body.style.overflow = 'hidden';
     }
 
-    function closeModal() { 
-        modal.style.display = 'none'; 
+    function closeModal() {
+        modal.style.display = 'none';
         document.body.style.overflow = 'auto';
     }
+    
+    // Cerrar al hacer click fuera
     window.onclick = (e) => { if(e.target == modal) closeModal(); }
+
+    // Cantidad
+    function updateQty(change) {
+        let val = parseInt(qtyInput.value);
+        val += change;
+        if(val < 1) val = 1;
+        qtyInput.value = val;
+    }
 </script>
 {% endblock %}

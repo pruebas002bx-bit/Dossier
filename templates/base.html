@@ -12,6 +12,9 @@
             --brand-red: #D32F2F;
             --brand-dark-red: #b71c1c;
             --brand-black: #111111;
+            /* Nuevo color principal para botones estilo referencia */
+            --brand-gold: #e3b46d; 
+            --brand-dark-gold: #c99a50;
             --text-dark: #222222;
             --text-light: #666666;
             --bg-light: #f8f9fa;
@@ -33,81 +36,59 @@
         ul { list-style: none; }
         h1, h2, h3, h4, h5 { font-family: 'Montserrat', sans-serif; }
 
-        /* --- TOP BAR (Idiomas, Envíos) --- */
+        /* --- TOP BAR --- */
         .top-bar { background: #000; color: #ccc; font-size: 12px; padding: 8px 0; border-bottom: 1px solid #333; }
         .container { max-width: 1300px; margin: 0 auto; padding: 0 20px; }
         .top-flex { display: flex; justify-content: space-between; align-items: center; }
         .top-links a { margin-left: 15px; color: #ccc; }
         .top-links a:hover { color: white; }
 
-        /* --- HEADER PRINCIPAL (Logo, Buscador, Acciones) --- */
+        /* --- HEADER PRINCIPAL --- */
         .main-header { background: white; padding: 25px 0; border-bottom: 1px solid var(--border-color); }
         .header-grid { display: grid; grid-template-columns: auto 1fr auto; gap: 40px; align-items: center; }
-        
         .logo img { height: 50px; display: block; }
         
-        /* Buscador estilo Retail */
         .search-wrapper { position: relative; width: 100%; max-width: 600px; margin: 0 auto; }
-        .search-input { 
-            width: 100%; padding: 12px 15px; border: 2px solid #eee; 
-            border-radius: 4px; font-family: inherit; font-size: 14px; 
-            background: #f9f9f9;
-        }
+        .search-input { width: 100%; padding: 12px 15px; border: 2px solid #eee; border-radius: 4px; font-family: inherit; font-size: 14px; background: #f9f9f9; }
         .search-input:focus { border-color: var(--brand-black); outline: none; background: white; }
-        .search-btn { 
-            position: absolute; right: 0; top: 0; height: 100%; width: 50px; 
-            border: none; background: transparent; color: #555; cursor: pointer; 
-        }
+        .search-btn { position: absolute; right: 0; top: 0; height: 100%; width: 50px; border: none; background: transparent; color: #555; cursor: pointer; }
 
         .user-actions { display: flex; gap: 25px; align-items: center; font-size: 14px; font-weight: 600; }
         .icon-link { display: flex; align-items: center; gap: 8px; }
         .icon-link i { font-size: 18px; color: var(--brand-black); }
 
-        /* --- NAVEGACIÓN PRINCIPAL (Negra, Pegajosa) --- */
+        /* --- NAVEGACIÓN PRINCIPAL --- */
         .main-nav { background: var(--brand-black); position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .nav-list { display: flex; gap: 0; }
-        .nav-link { 
-            display: block; padding: 16px 25px; color: white; 
-            font-family: 'Montserrat', sans-serif; font-weight: 700; 
-            font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;
-        }
+        .nav-link { display: block; padding: 16px 25px; color: white; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
         .nav-link:hover, .nav-link.active { background: var(--brand-red); color: white; }
 
         /* --- CONTENIDO GLOBAL --- */
         .page-content { flex: 1; padding: 40px 0; }
 
-        /* --- FOOTER ROBUSTO --- */
+        /* --- FOOTER --- */
         footer { background: #1a1a1a; color: #bbb; padding: 60px 0 20px; font-size: 14px; }
         .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 40px; margin-bottom: 40px; }
         .footer-col h4 { color: white; margin-bottom: 20px; font-size: 16px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid var(--brand-red); display: inline-block; padding-bottom: 5px; }
         .footer-col ul li { margin-bottom: 12px; }
         .footer-col a:hover { color: white; text-decoration: underline; }
         .social-icons i { font-size: 24px; margin-right: 15px; color: white; cursor: pointer; }
-        .social-icons i:hover { color: var(--brand-red); }
         .copyright { text-align: center; border-top: 1px solid #333; padding-top: 20px; color: #666; font-size: 12px; }
 
         /* --- UTILIDADES --- */
-        .btn-primary { 
-            background: var(--brand-red); color: white; padding: 12px 25px; 
-            border: none; font-weight: 700; text-transform: uppercase; cursor: pointer; 
-            font-family: 'Montserrat', sans-serif; transition: 0.2s;
-        }
+        .btn-primary { background: var(--brand-red); color: white; padding: 12px 25px; border: none; font-weight: 700; text-transform: uppercase; cursor: pointer; font-family: 'Montserrat', sans-serif; transition: 0.2s; }
         .btn-primary:hover { background: var(--brand-dark-red); }
-
         .alert { padding: 15px; margin-bottom: 25px; border-radius: 4px; text-align: center; font-weight: 600; }
         .alert.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
 
-        /* RESPONSIVE HEADER */
         @media (max-width: 768px) {
             .header-grid { grid-template-columns: 1fr auto; gap: 15px; }
             .search-wrapper { grid-column: 1 / -1; order: 3; }
             .nav-list { overflow-x: auto; white-space: nowrap; }
-            .nav-link { padding: 15px; }
         }
     </style>
 </head>
 <body>
-
     <div class="top-bar">
         <div class="container top-flex">
             <span><i class="fas fa-truck" style="margin-right:5px;"></i> {{ t.ship }}</span>
@@ -122,24 +103,14 @@
 
     <header class="main-header">
         <div class="container header-grid">
-            <a href="/" class="logo">
-                <img src="https://i.ibb.co/j9Pp0YLz/Logo-2.png" alt="ALPHA Logo">
-            </a>
-
+            <a href="/" class="logo"><img src="https://i.ibb.co/j9Pp0YLz/Logo-2.png" alt="ALPHA Logo"></a>
             <div class="search-wrapper">
                 <input type="text" class="search-input" placeholder="Buscar productos, SKUs, categorías...">
                 <button class="search-btn"><i class="fas fa-search"></i></button>
             </div>
-
             <div class="user-actions">
-                <a href="#" class="icon-link">
-                    <i class="far fa-user"></i>
-                    <span style="display:none; display:md-block;">Cuenta</span>
-                </a>
-                <a href="#" class="icon-link">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span>{{ t.cart }} (0)</span>
-                </a>
+                <a href="#" class="icon-link"><i class="far fa-user"></i><span>Cuenta</span></a>
+                <a href="#" class="icon-link"><i class="fas fa-shopping-cart"></i><span>{{ t.cart }} (0)</span></a>
             </div>
         </div>
     </header>
@@ -164,7 +135,6 @@
                 {% endfor %}
             {% endif %}
         {% endwith %}
-        
         {% block content %}{% endblock %}
     </div>
 
@@ -173,51 +143,22 @@
             <div class="footer-grid">
                 <div class="footer-col">
                     <h4>Alpha Training</h4>
-                    <p style="line-height: 1.6;">Líderes mundiales en simulación táctica y equipamiento de entrenamiento profesional.</p>
-                    <div class="social-icons" style="margin-top:20px;">
-                        <i class="fab fa-facebook"></i>
-                        <i class="fab fa-instagram"></i>
-                        <i class="fab fa-youtube"></i>
-                    </div>
+                    <p>Líderes mundiales en simulación táctica.</p>
+                    <div class="social-icons" style="margin-top:20px;"><i class="fab fa-facebook"></i><i class="fab fa-instagram"></i></div>
                 </div>
                 <div class="footer-col">
                     <h4>Atención al Cliente</h4>
-                    <ul>
-                        <li><a href="#">Contáctanos</a></li>
-                        <li><a href="#">Envíos y Devoluciones</a></li>
-                        <li><a href="#">Garantía</a></li>
-                        <li><a href="#">Servicio Técnico</a></li>
-                    </ul>
-                </div>
-                <div class="footer-col">
-                    <h4>Categorías</h4>
-                    <ul>
-                        <li><a href="#">Simuladores</a></li>
-                        <li><a href="#">Armas de Entrenamiento</a></li>
-                        <li><a href="#">Escenarios</a></li>
-                        <li><a href="#">Ofertas Especiales</a></li>
-                    </ul>
-                </div>
-                <div class="footer-col">
-                    <h4>Newsletter</h4>
-                    <p style="margin-bottom:15px;">Suscríbete para recibir las últimas novedades.</p>
-                    <input type="email" placeholder="Tu email..." style="width:100%; padding:10px; border:none; border-radius:3px;">
+                    <ul><li><a href="#">Contáctanos</a></li><li><a href="#">Garantía</a></li></ul>
                 </div>
             </div>
-            <div class="copyright">
-                &copy; 2026 ALPHA TRAINING SIMULATORS. Todos los derechos reservados.
-            </div>
+            <div class="copyright">&copy; 2026 ALPHA TRAINING SIMULATORS.</div>
         </div>
     </footer>
 
     <script>
-        // Lógica Global de Navegación (mantiene la compatibilidad con tu código anterior)
         function filterGrid(cat) {
-            // Actualizar estilo activo
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
             if(event && event.target) event.target.classList.add('active');
-            
-            // Lógica de filtrado en cliente (Index.html maneja la visualización)
             const cards = document.querySelectorAll('.product-card');
             if(cards.length > 0) {
                 cards.forEach(card => {
@@ -226,10 +167,7 @@
                     else if (cCat && cCat.toLowerCase().includes(cat)) card.style.display = 'flex';
                     else card.style.display = 'none';
                 });
-            } else {
-                // Si no estamos en index, redirigir (opcional)
-                window.location.href = '/?cat=' + cat;
-            }
+            } else { window.location.href = '/?cat=' + cat; }
         }
     </script>
 </body>
