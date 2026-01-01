@@ -2,94 +2,187 @@
 
 {% block content %}
 <style>
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 25px; }
-    .product-card { background: white; border: 1px solid #eee; display: flex; flex-direction: column; cursor: pointer; transition: 0.3s; position: relative; }
-    .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-    
-    .img-box { height: 220px; display: flex; align-items: center; justify-content: center; padding: 10px; background: white; }
-    .img-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
-    
-    .info { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; }
-    .info h3 { font-size: 1.1rem; margin-bottom: 5px; color: #000; font-weight: 800; }
-    .info .cat { color: #D32F2F; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; }
-    
-    .price-box { margin-top: auto; }
-    .usd { font-size: 1.3rem; font-weight: 900; color: #D32F2F; }
-    .cop { font-size: 0.9rem; color: #666; }
-    
-    .btn-view { background: #111; color: white; text-align: center; padding: 10px; margin-top: 10px; font-weight: bold; text-transform: uppercase; }
-    .btn-view:hover { background: #D32F2F; }
+    /* HEADER DE SECCIÓN */
+    .section-header { margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 15px; display: flex; justify-content: space-between; align-items: flex-end; }
+    .section-title { font-size: 24px; font-weight: 700; color: #111; text-transform: uppercase; margin: 0; }
+    .section-subtitle { font-size: 14px; color: #666; }
 
-    /* MODAL */
-    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
-    .modal-content { background: white; width: 100%; max-width: 900px; height: 80vh; display: grid; grid-template-columns: 1fr 1fr; position: relative; border-radius: 4px; overflow: hidden; }
-    .modal-left { background: #f9f9f9; padding: 20px; display: flex; flex-direction: column; align-items: center; overflow-y: auto; }
-    .main-img { width: 100%; height: 300px; object-fit: contain; background: white; border: 1px solid #eee; margin-bottom: 15px; }
-    .thumbs { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
-    .thumb { width: 60px; height: 60px; object-fit: cover; cursor: pointer; border: 2px solid transparent; opacity: 0.6; }
-    .thumb.active { border-color: #D32F2F; opacity: 1; }
+    /* GRID ROBUSTO */
+    .grid { 
+        display: grid; 
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); 
+        gap: 30px; 
+    }
+
+    /* TARJETA DE PRODUCTO */
+    .product-card { 
+        background: white; 
+        border: 1px solid #e0e0e0; 
+        display: flex; 
+        flex-direction: column; 
+        transition: all 0.3s ease; 
+        position: relative;
+        overflow: hidden;
+    }
     
-    .modal-right { padding: 40px; overflow-y: auto; color: #333; } 
-    .close { position: absolute; top: 15px; right: 20px; font-size: 2rem; cursor: pointer; color: #000; z-index: 10; }
+    .product-card:hover { 
+        border-color: #333; 
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
+    }
+
+    /* Imagen con Zoom suave */
+    .img-box { 
+        height: 250px; 
+        padding: 20px; 
+        background: white; 
+        position: relative; 
+        overflow: hidden; 
+        border-bottom: 1px solid #f4f4f4;
+    }
+    .img-box img { 
+        width: 100%; 
+        height: 100%; 
+        object-fit: contain; 
+        transition: transform 0.4s ease; 
+    }
+    .product-card:hover .img-box img { transform: scale(1.05); }
+
+    /* Etiquetas (Nuevo/Oferta) - Visual Only */
+    .badge { position: absolute; top: 10px; left: 10px; background: var(--brand-red); color: white; font-size: 10px; font-weight: bold; padding: 4px 8px; text-transform: uppercase; }
+
+    /* Info */
+    .info { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
+    .cat-label { font-size: 11px; text-transform: uppercase; color: #888; letter-spacing: 1px; margin-bottom: 5px; font-weight: 600; }
+    .prod-name { font-size: 15px; font-weight: 700; color: #111; margin-bottom: 10px; line-height: 1.4; font-family: 'Open Sans', sans-serif; height: 42px; overflow: hidden; }
     
-    @media (max-width: 768px) { .modal-content { grid-template-columns: 1fr; height: auto; max-height: 90vh; } }
+    .price-block { margin-top: auto; padding-top: 15px; }
+    .price-usd { font-size: 18px; font-weight: 800; color: var(--brand-red); font-family: 'Montserrat', sans-serif; }
+    .price-cop { font-size: 12px; color: #999; margin-top: 2px; }
+
+    /* Botón Oculto que aparece en Hover (Desktop) */
+    .card-actions { 
+        margin-top: 15px; 
+        opacity: 0; 
+        transform: translateY(10px); 
+        transition: 0.3s; 
+    }
+    .product-card:hover .card-actions { opacity: 1; transform: translateY(0); }
+    .btn-view { 
+        display: block; width: 100%; text-align: center; 
+        background: #111; color: white; padding: 10px; 
+        font-size: 12px; font-weight: 700; text-transform: uppercase; 
+        cursor: pointer; letter-spacing: 1px;
+    }
+    .btn-view:hover { background: var(--brand-red); }
+
+    /* MODAL MEJORADO */
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; padding: 20px; backdrop-filter: blur(2px); align-items: center; justify-content: center; }
+    .modal-content { 
+        background: white; width: 100%; max-width: 1000px; height: auto; max-height: 90vh; 
+        display: grid; grid-template-columns: 55% 45%; 
+        box-shadow: 0 20px 50px rgba(0,0,0,0.2); 
+        position: relative; overflow: hidden;
+    }
+    
+    .modal-gallery { background: #f8f9fa; padding: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; overflow-y: auto;}
+    .main-display { max-width: 100%; max-height: 400px; object-fit: contain; margin-bottom: 20px; mix-blend-mode: multiply; }
+    .thumbs-row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+    .thumb-img { width: 60px; height: 60px; border: 2px solid #ddd; object-fit: cover; cursor: pointer; transition: 0.2s; background: white; }
+    .thumb-img.active { border-color: var(--brand-red); }
+    
+    .modal-details { padding: 40px; display: flex; flex-direction: column; overflow-y: auto; }
+    .modal-cat { color: #888; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+    .modal-title { font-size: 26px; font-weight: 700; margin-bottom: 15px; line-height: 1.2; }
+    .modal-price { font-size: 24px; color: var(--brand-red); font-weight: 700; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 20px; }
+    
+    .modal-specs { color: #555; line-height: 1.6; font-size: 14px; margin-bottom: 30px; white-space: pre-line; }
+    
+    .modal-actions button { width: 100%; padding: 15px; font-size: 14px; }
+    .close-modal { position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; color: #999; z-index: 10; transition: 0.2s; }
+    .close-modal:hover { color: #000; }
+
+    @media (max-width: 768px) {
+        .card-actions { opacity: 1; transform: translateY(0); } /* Siempre visible en móvil */
+        .modal-content { grid-template-columns: 1fr; overflow-y: auto; }
+        .modal-gallery { height: auto; padding: 20px; }
+        .main-display { height: 250px; }
+    }
 </style>
+
+<div class="section-header">
+    <div>
+        <h2 class="section-title">{{ t.products_title | default('Catálogo') }}</h2>
+        <span class="section-subtitle">Mostrando {{ products|length }} resultados</span>
+    </div>
+</div>
 
 <div class="grid">
     {% for p in products %}
     <article class="product-card" data-cat="{{ p.category|lower }}" onclick="openModal({{ p.id }})">
-        <div class="img-box">
-            <img src="{{ p.images[0] if p.images else 'https://via.placeholder.com/300' }}" alt="">
+        {% if loop.index % 2 == 0 %}<span class="badge">OFERTA</span>{% endif %} <div class="img-box">
+            <img src="{{ p.images[0] if p.images else 'https://via.placeholder.com/300?text=No+Image' }}" alt="{{ p.name }}">
         </div>
         <div class="info">
-            <span class="cat">{{ p.category }}</span>
-            <h3>{{ p.name }}</h3>
-            <div class="price-box">
-                <div class="usd">${{ "{:,.2f}".format(p.price_usd) }}</div>
-                <div class="cop">COP ${{ "{:,.0f}".format(p.price_cop) }}</div>
+            <span class="cat-label">{{ p.category }}</span>
+            <h3 class="prod-name">{{ p.name }}</h3>
+            <div class="price-block">
+                <div class="price-usd">${{ "{:,.2f}".format(p.price_usd) }} USD</div>
+                <div class="price-cop">Aprox. COP ${{ "{:,.0f}".format(p.price_cop) }}</div>
             </div>
-            <div class="btn-view">{{ t.details }}</div>
+            <div class="card-actions">
+                <div class="btn-view">{{ t.details }}</div>
+            </div>
         </div>
     </article>
     {% else %}
-    <p>No hay productos.</p>
+    <div style="grid-column: 1/-1; padding: 50px; text-align: center; background: white; border: 1px dashed #ccc;">
+        <h3>No se encontraron productos</h3>
+        <p>Intenta seleccionar otra categoría.</p>
+    </div>
     {% endfor %}
 </div>
 
 <div class="modal" id="modal">
     <div class="modal-content">
-        <span class="close" onclick="closeModal()">&times;</span>
-        <div class="modal-left">
-            <img src="" id="mImg" class="main-img">
-            <div class="thumbs" id="mThumbs"></div>
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        
+        <div class="modal-gallery">
+            <img src="" id="mImg" class="main-display">
+            <div class="thumbs-row" id="mThumbs"></div>
         </div>
-        <div class="modal-right">
-            <h4 id="mCat" style="color:#D32F2F; text-transform:uppercase;"></h4>
-            <h2 id="mTitle" style="font-size:2rem; margin-bottom:15px; color:#000;"></h2>
-            <p id="mSpecs" style="white-space: pre-line; color:#444; margin-bottom:20px; font-size:1.1rem;"></p>
-            <h3 id="mPrice" style="font-size:1.5rem; font-weight:900; color:#D32F2F;"></h3>
-            <button style="background:#000; color:white; padding:15px; width:100%; border:none; margin-top:20px; font-weight:bold; cursor:pointer;">{{ t.add }}</button>
+        
+        <div class="modal-details">
+            <span id="mCat" class="modal-cat"></span>
+            <h2 id="mTitle" class="modal-title"></h2>
+            <div id="mPrice" class="modal-price"></div>
+            
+            <div style="font-weight: bold; margin-bottom: 10px; font-size: 13px;">DESCRIPCIÓN & ESPECIFICACIONES</div>
+            <p id="mSpecs" class="modal-specs"></p>
+            
+            <div class="modal-actions" style="margin-top: auto;">
+                <button class="btn-primary" style="width: 100%;">{{ t.add }} <i class="fas fa-shopping-cart" style="margin-left: 10px;"></i></button>
+                <div style="text-align: center; margin-top: 10px; font-size: 12px; color: #888;">
+                    <i class="fas fa-shield-alt"></i> Garantía ALPHA | <i class="fas fa-shipping-fast"></i> Envío Asegurado
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-    // --- DICCIONARIO JS SEGURO Y ROBUSTO ---
     const productsDB = {};
-    
     {% for p in products %}
     productsDB[{{ p.id }}] = {
         name: {{ p.name | tojson }},
         cat: {{ p.category | tojson }},
-        specs: {{ p.specs | default('') | tojson }},
-        // CORRECCIÓN AQUÍ: Usamos tojson en todo el string formateado.
-        // Esto evita el error de comillas en el editor y asegura que sea un string válido JS.
+        specs: {{ p.specs | default('Sin descripción disponible.') | tojson }},
         usd: {{ "{:,.2f}".format(p.price_usd) | tojson }},
         images: {{ p.images | tojson }}
     };
     {% endfor %}
 
     const modal = document.getElementById('modal');
+    const mImg = document.getElementById('mImg');
 
     function openModal(id) {
         const p = productsDB[id];
@@ -98,22 +191,20 @@
         document.getElementById('mTitle').innerText = p.name;
         document.getElementById('mCat').innerText = p.cat;
         document.getElementById('mSpecs').innerText = p.specs;
-        document.getElementById('mPrice').innerText = `USD $${p.usd}`;
+        document.getElementById('mPrice').innerText = `$${p.usd} USD`;
 
-        // Lógica de Imágenes
-        const mImg = document.getElementById('mImg');
         const thumbs = document.getElementById('mThumbs');
         thumbs.innerHTML = '';
         
         if(p.images && p.images.length > 0) {
             mImg.src = p.images[0];
-            p.images.forEach(url => {
+            p.images.forEach((url, index) => {
                 const t = document.createElement('img');
                 t.src = url;
-                t.className = 'thumb';
+                t.className = 'thumb-img' + (index === 0 ? ' active' : '');
                 t.onclick = () => {
                     mImg.src = url;
-                    document.querySelectorAll('.thumb').forEach(x => x.classList.remove('active'));
+                    document.querySelectorAll('.thumb-img').forEach(x => x.classList.remove('active'));
                     t.classList.add('active');
                 };
                 thumbs.appendChild(t);
@@ -123,9 +214,13 @@
         }
 
         modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden'; // Evitar scroll de fondo
     }
 
-    function closeModal() { modal.style.display = 'none'; }
+    function closeModal() { 
+        modal.style.display = 'none'; 
+        document.body.style.overflow = 'auto';
+    }
     window.onclick = (e) => { if(e.target == modal) closeModal(); }
 </script>
 {% endblock %}

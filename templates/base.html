@@ -4,83 +4,159 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ALPHA | Training Simulators</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
     <style>
-        :root { --brand-red: #D32F2F; --brand-black: #0a0a0a; --white: #ffffff; }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Roboto', sans-serif; background: #f4f4f4; color: #333; display: flex; flex-direction: column; min-height: 100vh; }
-        a { text-decoration: none; color: inherit; }
-
-        /* HEADER */
-        .top-bar { background: var(--brand-black); color: white; padding: 10px 0; font-size: 0.8rem; }
-        .top-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: flex-end; align-items: center; gap: 15px; padding: 0 20px; }
-        .flags a { font-size: 1.2rem; text-decoration: none; margin-left: 8px; }
-        
-        .main-header { background: white; padding: 20px 0; border-bottom: 1px solid #ddd; }
-        .header-inner { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
-        
-        /* NAV TABS (Estilo Específico) */
-        .main-nav { background: var(--brand-black); position: sticky; top: 0; z-index: 100; }
-        .nav-list { display: flex; justify-content: center; list-style: none; flex-wrap: wrap; }
-        .nav-link { 
-            padding: 15px 25px; 
-            color: white; 
-            font-weight: 700; 
-            text-transform: uppercase; 
-            cursor: pointer; 
-            border-bottom: 4px solid transparent; 
-            font-size: 0.95rem;
+        :root {
+            --brand-red: #D32F2F;
+            --brand-dark-red: #b71c1c;
+            --brand-black: #111111;
+            --text-dark: #222222;
+            --text-light: #666666;
+            --bg-light: #f8f9fa;
+            --border-color: #e5e5e5;
         }
-        .nav-link:hover, .nav-link.active { background: #222; color: var(--brand-red); border-bottom-color: var(--brand-red); }
 
-        /* CONTENIDO */
-        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; flex: 1; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body { 
+            font-family: 'Open Sans', sans-serif; 
+            background: var(--bg-light); 
+            color: var(--text-dark); 
+            display: flex; 
+            flex-direction: column; 
+            min-height: 100vh;
+        }
 
-        /* FOOTER */
-        footer { background: var(--brand-black); color: #aaa; padding: 50px 0 20px; margin-top: auto; }
-        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-        .footer-col h4 { color: white; margin-bottom: 15px; font-weight: bold; }
-        .footer-col ul li { margin-bottom: 8px; }
-        .footer-col a:hover { color: var(--brand-red); }
+        a { text-decoration: none; color: inherit; transition: 0.2s; }
+        ul { list-style: none; }
+        h1, h2, h3, h4, h5 { font-family: 'Montserrat', sans-serif; }
 
-        /* ALERTAS */
-        .alert { padding: 10px; margin-bottom: 20px; text-align: center; color: white; font-weight: bold; }
-        .alert.error { background: red; }
-        .alert.success { background: green; }
+        /* --- TOP BAR (Idiomas, Envíos) --- */
+        .top-bar { background: #000; color: #ccc; font-size: 12px; padding: 8px 0; border-bottom: 1px solid #333; }
+        .container { max-width: 1300px; margin: 0 auto; padding: 0 20px; }
+        .top-flex { display: flex; justify-content: space-between; align-items: center; }
+        .top-links a { margin-left: 15px; color: #ccc; }
+        .top-links a:hover { color: white; }
+
+        /* --- HEADER PRINCIPAL (Logo, Buscador, Acciones) --- */
+        .main-header { background: white; padding: 25px 0; border-bottom: 1px solid var(--border-color); }
+        .header-grid { display: grid; grid-template-columns: auto 1fr auto; gap: 40px; align-items: center; }
+        
+        .logo img { height: 50px; display: block; }
+        
+        /* Buscador estilo Retail */
+        .search-wrapper { position: relative; width: 100%; max-width: 600px; margin: 0 auto; }
+        .search-input { 
+            width: 100%; padding: 12px 15px; border: 2px solid #eee; 
+            border-radius: 4px; font-family: inherit; font-size: 14px; 
+            background: #f9f9f9;
+        }
+        .search-input:focus { border-color: var(--brand-black); outline: none; background: white; }
+        .search-btn { 
+            position: absolute; right: 0; top: 0; height: 100%; width: 50px; 
+            border: none; background: transparent; color: #555; cursor: pointer; 
+        }
+
+        .user-actions { display: flex; gap: 25px; align-items: center; font-size: 14px; font-weight: 600; }
+        .icon-link { display: flex; align-items: center; gap: 8px; }
+        .icon-link i { font-size: 18px; color: var(--brand-black); }
+
+        /* --- NAVEGACIÓN PRINCIPAL (Negra, Pegajosa) --- */
+        .main-nav { background: var(--brand-black); position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .nav-list { display: flex; gap: 0; }
+        .nav-link { 
+            display: block; padding: 16px 25px; color: white; 
+            font-family: 'Montserrat', sans-serif; font-weight: 700; 
+            font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .nav-link:hover, .nav-link.active { background: var(--brand-red); color: white; }
+
+        /* --- CONTENIDO GLOBAL --- */
+        .page-content { flex: 1; padding: 40px 0; }
+
+        /* --- FOOTER ROBUSTO --- */
+        footer { background: #1a1a1a; color: #bbb; padding: 60px 0 20px; font-size: 14px; }
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 40px; margin-bottom: 40px; }
+        .footer-col h4 { color: white; margin-bottom: 20px; font-size: 16px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid var(--brand-red); display: inline-block; padding-bottom: 5px; }
+        .footer-col ul li { margin-bottom: 12px; }
+        .footer-col a:hover { color: white; text-decoration: underline; }
+        .social-icons i { font-size: 24px; margin-right: 15px; color: white; cursor: pointer; }
+        .social-icons i:hover { color: var(--brand-red); }
+        .copyright { text-align: center; border-top: 1px solid #333; padding-top: 20px; color: #666; font-size: 12px; }
+
+        /* --- UTILIDADES --- */
+        .btn-primary { 
+            background: var(--brand-red); color: white; padding: 12px 25px; 
+            border: none; font-weight: 700; text-transform: uppercase; cursor: pointer; 
+            font-family: 'Montserrat', sans-serif; transition: 0.2s;
+        }
+        .btn-primary:hover { background: var(--brand-dark-red); }
+
+        .alert { padding: 15px; margin-bottom: 25px; border-radius: 4px; text-align: center; font-weight: 600; }
+        .alert.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+
+        /* RESPONSIVE HEADER */
+        @media (max-width: 768px) {
+            .header-grid { grid-template-columns: 1fr auto; gap: 15px; }
+            .search-wrapper { grid-column: 1 / -1; order: 3; }
+            .nav-list { overflow-x: auto; white-space: nowrap; }
+            .nav-link { padding: 15px; }
+        }
     </style>
 </head>
 <body>
 
     <div class="top-bar">
-        <div class="top-container">
-            <span>{{ t.ship }} | ALPHA</span>
-            <div class="flags">
-                <a href="/set_language/es">🇪🇸</a>
-                <a href="/set_language/en">🇺🇸</a>
-                <a href="/set_language/pt">🇵🇹</a>
+        <div class="container top-flex">
+            <span><i class="fas fa-truck" style="margin-right:5px;"></i> {{ t.ship }}</span>
+            <div class="top-links">
+                <a href="/set_language/es">ES</a>
+                <a href="/set_language/en">EN</a>
+                <a href="/set_language/pt">PT</a>
+                <a href="/admin-login" style="margin-left:20px; color: #888;">Admin</a>
             </div>
         </div>
     </div>
 
     <header class="main-header">
-        <div class="header-inner">
-            <a href="/"><img src="https://i.ibb.co/j9Pp0YLz/Logo-2.png" style="height: 60px;"></a>
-            <div><i class="fas fa-shopping-cart"></i> {{ t.cart }}</div>
+        <div class="container header-grid">
+            <a href="/" class="logo">
+                <img src="https://i.ibb.co/j9Pp0YLz/Logo-2.png" alt="ALPHA Logo">
+            </a>
+
+            <div class="search-wrapper">
+                <input type="text" class="search-input" placeholder="Buscar productos, SKUs, categorías...">
+                <button class="search-btn"><i class="fas fa-search"></i></button>
+            </div>
+
+            <div class="user-actions">
+                <a href="#" class="icon-link">
+                    <i class="far fa-user"></i>
+                    <span style="display:none; display:md-block;">Cuenta</span>
+                </a>
+                <a href="#" class="icon-link">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>{{ t.cart }} (0)</span>
+                </a>
+            </div>
         </div>
     </header>
 
     <nav class="main-nav">
-        <ul class="nav-list">
-            <li><a href="/?cat=ofertas" class="nav-link" onclick="filterGrid('ofertas'); return false;">{{ t.offers }}</a></li>
-            <li><a href="/?cat=escenarios" class="nav-link" onclick="filterGrid('escenarios'); return false;">{{ t.scenarios }}</a></li>
-            <li><a href="/?cat=armas" class="nav-link" onclick="filterGrid('armas'); return false;">{{ t.weapons }}</a></li>
-            <li><a href="/?cat=kits" class="nav-link" onclick="filterGrid('kits'); return false;">{{ t.kits }}</a></li>
-            <li><a href="/?cat=simuladores" class="nav-link" onclick="filterGrid('simuladores'); return false;">{{ t.sims }}</a></li>
-        </ul>
+        <div class="container">
+            <ul class="nav-list">
+                <li><a href="/?cat=ofertas" class="nav-link" onclick="filterGrid('ofertas'); return false;">{{ t.offers }}</a></li>
+                <li><a href="/?cat=escenarios" class="nav-link" onclick="filterGrid('escenarios'); return false;">{{ t.scenarios }}</a></li>
+                <li><a href="/?cat=armas" class="nav-link" onclick="filterGrid('armas'); return false;">{{ t.weapons }}</a></li>
+                <li><a href="/?cat=kits" class="nav-link" onclick="filterGrid('kits'); return false;">{{ t.kits }}</a></li>
+                <li><a href="/?cat=simuladores" class="nav-link" onclick="filterGrid('simuladores'); return false;">{{ t.sims }}</a></li>
+            </ul>
+        </div>
     </nav>
 
-    <div class="container">
+    <div class="page-content container">
         {% with messages = get_flashed_messages() %}
             {% if messages %}
                 {% for message in messages %}
@@ -93,41 +169,67 @@
     </div>
 
     <footer>
-        <div class="footer-grid">
-            <div class="footer-col">
-                <h4>ALPHA SUPPORT</h4>
-                <ul>
-                    <li>Servicio Técnico</li>
-                    <li>Garantía</li>
-                    <li>{{ t.contact }}</li>
-                    <li><a href="/admin-login" style="color: #555; font-size: 0.8rem;">{{ t.admin }}</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>ALPHA | TRAINING</h4>
-                <p>Líderes en simulación táctica.</p>
-                <div style="margin-top: 10px; font-size: 1.5rem; color: white;">
-                    <i class="fab fa-instagram"></i> <i class="fab fa-facebook"></i>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h4>Alpha Training</h4>
+                    <p style="line-height: 1.6;">Líderes mundiales en simulación táctica y equipamiento de entrenamiento profesional.</p>
+                    <div class="social-icons" style="margin-top:20px;">
+                        <i class="fab fa-facebook"></i>
+                        <i class="fab fa-instagram"></i>
+                        <i class="fab fa-youtube"></i>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>Atención al Cliente</h4>
+                    <ul>
+                        <li><a href="#">Contáctanos</a></li>
+                        <li><a href="#">Envíos y Devoluciones</a></li>
+                        <li><a href="#">Garantía</a></li>
+                        <li><a href="#">Servicio Técnico</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Categorías</h4>
+                    <ul>
+                        <li><a href="#">Simuladores</a></li>
+                        <li><a href="#">Armas de Entrenamiento</a></li>
+                        <li><a href="#">Escenarios</a></li>
+                        <li><a href="#">Ofertas Especiales</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Newsletter</h4>
+                    <p style="margin-bottom:15px;">Suscríbete para recibir las últimas novedades.</p>
+                    <input type="email" placeholder="Tu email..." style="width:100%; padding:10px; border:none; border-radius:3px;">
                 </div>
             </div>
-        </div>
-        <div style="text-align: center; margin-top: 30px; padding-top: 10px; border-top: 1px solid #333;">
-            &copy; 2026 ALPHA.
+            <div class="copyright">
+                &copy; 2026 ALPHA TRAINING SIMULATORS. Todos los derechos reservados.
+            </div>
         </div>
     </footer>
 
     <script>
+        // Lógica Global de Navegación (mantiene la compatibilidad con tu código anterior)
         function filterGrid(cat) {
+            // Actualizar estilo activo
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            event.target.classList.add('active');
+            if(event && event.target) event.target.classList.add('active');
             
+            // Lógica de filtrado en cliente (Index.html maneja la visualización)
             const cards = document.querySelectorAll('.product-card');
-            cards.forEach(card => {
-                const cCat = card.getAttribute('data-cat');
-                if (cat === 'ofertas') card.style.display = 'flex';
-                else if (cCat && cCat.toLowerCase().includes(cat)) card.style.display = 'flex';
-                else card.style.display = 'none';
-            });
+            if(cards.length > 0) {
+                cards.forEach(card => {
+                    const cCat = card.getAttribute('data-cat');
+                    if (cat === 'ofertas') card.style.display = 'flex';
+                    else if (cCat && cCat.toLowerCase().includes(cat)) card.style.display = 'flex';
+                    else card.style.display = 'none';
+                });
+            } else {
+                // Si no estamos en index, redirigir (opcional)
+                window.location.href = '/?cat=' + cat;
+            }
         }
     </script>
 </body>

@@ -1,10 +1,15 @@
 {% extends 'base.html' %}
 {% block content %}
-<div style="max-width: 400px; margin: 50px auto; background: white; padding: 30px; border: 1px solid #ddd; text-align: center;">
-    <h2>Acceso Admin</h2>
+<div style="max-width: 450px; margin: 60px auto; background: white; padding: 40px; border: 1px solid #e0e0e0; border-top: 4px solid var(--brand-red); text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.05);">
+    <h2 style="margin-bottom: 10px; font-weight: 700;">Acceso Administrativo</h2>
+    <p style="color: #666; font-size: 14px; margin-bottom: 30px;">Ingresa tus credenciales seguras para gestionar el catálogo.</p>
+    
     <form method="POST" action="/admin-login">
-        <input type="password" name="password" placeholder="Contraseña..." style="width:100%; padding:10px; margin: 20px 0; border:1px solid #ccc;" required>
-        <button type="submit" style="width:100%; padding:10px; background: #D32F2F; color: white; border: none; font-weight: bold;">ENTRAR</button>
+        <div style="text-align: left; margin-bottom: 20px;">
+            <label style="font-size: 12px; font-weight: bold; text-transform: uppercase;">Contraseña Maestra</label>
+            <input type="password" name="password" placeholder="••••••••" style="width:100%; padding:12px; margin-top: 5px; border:1px solid #ccc; border-radius: 4px;" required>
+        </div>
+        <button type="submit" class="btn-primary" style="width:100%;">ENTRAR AL SISTEMA</button>
     </form>
 </div>
 {% endblock %}
