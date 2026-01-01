@@ -13,7 +13,7 @@
             --brand-dark-red: #b71c1c;
             --brand-black: #111111;
             --text-dark: #222222;
-            --bg-light: #f4f6f8; /* Fondo ligeramente mas gris para contraste */
+            --bg-light: #f4f6f8;
             --border-color: #e5e5e5;
         }
 
@@ -34,8 +34,9 @@
 
         /* --- TOP BAR --- */
         .top-bar { background: #000; color: #ccc; font-size: 11px; padding: 6px 0; border-bottom: 1px solid #333; }
-        /* CORRECCIÓN GRID 5 COLUMNAS: Aumentamos ancho máximo a 1500px */
-        .container { max-width: 1500px; margin: 0 auto; padding: 0 20px; }
+        
+        /* CORRECCIÓN DE ANCHO: Usamos el 98% de la pantalla para aprovechar todo el espacio */
+        .container { max-width: 98%; margin: 0 auto; padding: 0 30px; }
         
         .top-flex { display: flex; justify-content: space-between; align-items: center; }
         .top-links a { margin-left: 15px; color: #ccc; }
@@ -44,10 +45,9 @@
         /* --- HEADER PRINCIPAL --- */
         .main-header { background: white; padding: 20px 0; border-bottom: 1px solid var(--border-color); box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
         .header-grid { display: grid; grid-template-columns: auto 1fr auto; gap: 40px; align-items: center; }
-        .logo img { height: 55px; display: block; }
+        .logo img { height: 60px; display: block; } /* Logo un poco más grande */
         
-        /* CORRECCIÓN BUSCADOR */
-        .search-form { position: relative; width: 100%; max-width: 700px; margin: 0 auto; }
+        .search-form { position: relative; width: 100%; max-width: 800px; margin: 0 auto; }
         .search-input { width: 100%; padding: 12px 20px; border: 2px solid #eee; border-radius: 4px; font-family: inherit; font-size: 14px; background: #f9f9f9; transition: 0.3s; }
         .search-input:focus { border-color: var(--brand-black); outline: none; background: white; }
         .search-btn { position: absolute; right: 0; top: 0; height: 100%; width: 50px; border: none; background: transparent; color: #555; cursor: pointer; }
@@ -58,8 +58,8 @@
 
         /* --- NAVEGACIÓN --- */
         .main-nav { background: var(--brand-black); position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
-        .nav-list { display: flex; gap: 0; }
-        .nav-link { display: block; padding: 15px 30px; color: white; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; }
+        .nav-list { display: flex; gap: 0; justify-content: center; } /* Centrado */
+        .nav-link { display: block; padding: 15px 30px; color: white; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
         .nav-link:hover, .nav-link.active { background: var(--brand-red); color: white; }
 
         /* --- CONTENIDO --- */
@@ -79,7 +79,8 @@
         @media (max-width: 992px) {
             .header-grid { grid-template-columns: 1fr auto; gap: 20px; }
             .search-form { grid-column: 1 / -1; order: 3; }
-            .nav-list { overflow-x: auto; white-space: nowrap; }
+            .nav-list { overflow-x: auto; white-space: nowrap; justify-content: flex-start; }
+            .container { padding: 0 15px; }
         }
     </style>
 </head>
