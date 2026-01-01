@@ -2,30 +2,38 @@
 
 {% block content %}
 <style>
-    /* --- ESTRUCTURA DE PÁGINA (SIDEBAR + CONTENIDO) --- */
+    /* --- LAYOUT PRINCIPAL (Sidebar + Grid) --- */
     .shop-container { display: flex; gap: 30px; align-items: flex-start; margin-top: 20px; }
     .shop-sidebar { width: 260px; flex-shrink: 0; background: white; border: 1px solid #e5e5e5; padding: 25px; border-radius: 4px; }
     .shop-main { flex: 1; }
 
-    /* --- ESTILOS DEL SIDEBAR (FILTROS) --- */
+    /* --- SIDEBAR FILTERS (FUNCIONALES) --- */
     .filter-group { margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #eee; }
     .filter-group:last-child { border-bottom: none; }
     .filter-title { font-size: 14px; font-weight: 800; text-transform: uppercase; margin-bottom: 15px; color: #111; letter-spacing: 0.5px; }
     
-    .cat-list li { 
-        margin-bottom: 10px; font-size: 13px; color: #555; cursor: pointer; 
-        transition: 0.2s; display: flex; align-items: center; justify-content: space-between;
+    .cat-list { list-style: none; padding: 0; }
+    .cat-list li { margin-bottom: 8px; }
+    .cat-list a { 
+        font-size: 13px; color: #555; text-decoration: none; 
+        display: flex; align-items: center; justify-content: space-between; transition: 0.2s; 
+        cursor: pointer;
     }
-    .cat-list li:hover { color: var(--brand-red); font-weight: 600; }
-    .cat-list li i { font-size: 10px; color: #ccc; }
+    .cat-list a:hover { color: var(--brand-red); font-weight: 600; }
+    
+    /* Inputs de Precio */
+    .price-inputs { display: flex; gap: 10px; align-items: center; }
+    .price-input { width: 100%; padding: 8px; border: 1px solid #ccc; font-size: 12px; border-radius: 4px; }
+    .btn-filter { width: 100%; background: #222; color: white; border: none; padding: 10px; margin-top: 15px; font-weight: bold; font-size: 12px; cursor: pointer; text-transform: uppercase; transition: 0.2s; }
+    .btn-filter:hover { background: #000; }
 
-    /* Slider visual de precio */
-    .price-range-visual { width: 100%; height: 4px; background: #ddd; position: relative; margin: 20px 0; }
-    .price-knob { width: 16px; height: 16px; background: var(--brand-red); border-radius: 50%; position: absolute; top: -6px; right: 0; cursor: pointer; }
-    .price-labels { display: flex; justify-content: space-between; font-size: 12px; color: #666; font-weight: bold; }
-
-    /* --- GRID DE PRODUCTOS --- */
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 25px; }
+    /* --- GRID DE PRODUCTOS (5 POR FILA) --- */
+    .grid { 
+        display: grid; 
+        /* Ajuste clave: minmax más pequeño permite 5 elementos en contenedores de 1200px+ */
+        grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); 
+        gap: 20px; 
+    }
 
     /* --- TARJETA DE PRODUCTO --- */
     .product-card { 
@@ -36,7 +44,7 @@
     .product-card:hover { border-color: #999; box-shadow: 0 10px 25px rgba(0,0,0,0.08); transform: translateY(-2px); }
     
     .img-box { 
-        height: 240px; padding: 20px; background: white; position: relative; 
+        height: 200px; padding: 15px; background: white; position: relative; 
         display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #f4f4f4;
     }
     .img-box img { 
@@ -45,117 +53,109 @@
     }
     .product-card:hover .img-box img { transform: scale(1.08); }
 
-    .info { padding: 18px; flex-grow: 1; display: flex; flex-direction: column; text-align: left; }
+    .info { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; text-align: left; }
     .cat-tag { font-size: 10px; font-weight: 700; color: #888; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 0.5px; }
-    .prod-title { font-size: 15px; font-weight: 700; color: #111; margin-bottom: 8px; line-height: 1.4; height: 42px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+    .prod-title { font-size: 14px; font-weight: 700; color: #111; margin-bottom: 8px; line-height: 1.3; height: 38px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
     
-    /* Estrellas */
-    .star-rating { color: #e3b46d; font-size: 11px; margin-bottom: 12px; }
+    .star-rating { color: #e3b46d; font-size: 10px; margin-bottom: 10px; }
     
     .price-section { margin-top: auto; border-top: 1px solid #f9f9f9; padding-top: 10px; }
-    .usd-price { font-size: 18px; font-weight: 800; color: #111; font-family: 'Montserrat', sans-serif; }
+    .usd-price { font-size: 16px; font-weight: 800; color: #111; font-family: 'Montserrat', sans-serif; }
     .cop-price { font-size: 11px; color: #777; font-weight: 500; }
 
-    /* --- MODAL AVANZADO (ESTILO AL FLAHERTY'S) --- */
+    /* --- MODAL AVANZADO --- */
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); z-index: 5000; padding: 10px; align-items: center; justify-content: center; backdrop-filter: blur(3px); }
     .modal-content { 
-        background: white; width: 100%; max-width: 1150px; height: 90vh; 
+        background: white; width: 100%; max-width: 1100px; height: 85vh; 
         display: flex; flex-direction: column; border-radius: 4px; overflow: hidden;
         box-shadow: 0 25px 50px rgba(0,0,0,0.3);
     }
     
-    /* Header Modal */
-    .modal-head { padding: 20px 30px; border-bottom: 1px solid #eee; position: relative; background: white; }
-    .close-btn { position: absolute; top: 20px; right: 25px; font-size: 28px; cursor: pointer; color: #999; line-height: 1; transition: 0.2s; }
+    .modal-head { padding: 15px 25px; border-bottom: 1px solid #eee; position: relative; background: white; display: flex; justify-content: space-between; align-items: center; }
+    .close-btn { font-size: 28px; cursor: pointer; color: #999; line-height: 1; transition: 0.2s; }
     .close-btn:hover { color: var(--brand-red); }
     
-    /* Body Dividido */
     .modal-body { display: grid; grid-template-columns: 55% 45%; flex: 1; overflow-y: auto; }
     
-    /* Galería (Izquierda) */
-    .modal-gallery { background: #fff; padding: 40px; display: flex; flex-direction: column; align-items: center; border-right: 1px solid #eee; }
-    .main-img-container { width: 100%; height: 400px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+    .modal-gallery { background: #fff; padding: 30px; display: flex; flex-direction: column; align-items: center; border-right: 1px solid #eee; }
+    .main-img-container { width: 100%; height: 350px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
     .main-img-display { max-width: 100%; max-height: 100%; object-fit: contain; }
     .thumbs-container { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
-    .thumb { width: 70px; height: 70px; border: 1px solid #ddd; padding: 5px; cursor: pointer; object-fit: contain; opacity: 0.7; transition: 0.2s; }
+    .thumb { width: 60px; height: 60px; border: 1px solid #ddd; padding: 4px; cursor: pointer; object-fit: contain; opacity: 0.7; transition: 0.2s; }
     .thumb.active, .thumb:hover { border-color: #333; opacity: 1; }
 
-    /* Info (Derecha) */
-    .modal-details { padding: 40px; background: white; }
-    .m-brand { color: #666; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; margin-bottom: 5px; }
-    .m-title { font-size: 26px; font-weight: 800; line-height: 1.2; margin-bottom: 10px; color: #111; font-family: 'Montserrat', sans-serif; }
-    .m-sku { font-size: 13px; color: #888; margin-bottom: 20px; font-family: monospace; }
+    .modal-details { padding: 30px; background: white; }
+    .m-brand { color: #666; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; margin-bottom: 5px; }
+    .m-title { font-size: 24px; font-weight: 800; line-height: 1.2; margin-bottom: 10px; color: #111; font-family: 'Montserrat', sans-serif; }
+    .m-sku { font-size: 12px; color: #888; margin-bottom: 20px; font-family: monospace; }
     
-    .m-price { font-size: 32px; font-weight: 800; color: var(--brand-red); font-family: 'Montserrat', sans-serif; margin-bottom: 5px; }
+    .m-price { font-size: 28px; font-weight: 800; color: var(--brand-red); font-family: 'Montserrat', sans-serif; margin-bottom: 5px; }
     .m-cop { font-size: 14px; color: #666; margin-bottom: 25px; font-weight: 600; }
     
     .stock-badge { display: inline-block; background: #e6f4ea; color: #1e7e34; padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: 700; margin-bottom: 25px; border: 1px solid #c3e6cb; }
 
-    /* Acciones de Compra */
     .qty-row { display: flex; align-items: center; margin-bottom: 20px; gap: 15px; }
     .qty-box { display: flex; border: 1px solid #ccc; height: 45px; }
     .qty-btn { width: 40px; border: none; background: #f8f8f8; font-weight: bold; cursor: pointer; font-size: 16px; }
     .qty-input { width: 50px; text-align: center; border: none; border-left: 1px solid #eee; border-right: 1px solid #eee; font-weight: bold; font-size: 16px; }
 
-    .action-row { display: flex; gap: 15px; margin-bottom: 30px; }
-    .btn-add { flex: 2; background: #e3b46d; color: black; border: none; font-weight: 800; text-transform: uppercase; font-size: 14px; cursor: pointer; transition: 0.2s; padding: 0 20px; display: flex; align-items: center; justify-content: center; gap: 10px; font-family: 'Montserrat', sans-serif; height: 50px; }
-    .btn-add:hover { background: #c99a50; }
-    .btn-wish { flex: 1; background: white; border: 2px solid #ddd; color: #555; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; transition: 0.2s; height: 50px; }
-    .btn-wish:hover { border-color: #333; color: #333; }
+    /* BOTON ROJO SOLICITADO */
+    .btn-add { 
+        width: 100%; background: #D32F2F; color: white; border: none; 
+        font-weight: 800; text-transform: uppercase; font-size: 14px; 
+        cursor: pointer; transition: 0.2s; height: 50px; display: flex; 
+        align-items: center; justify-content: center; gap: 10px; 
+        font-family: 'Montserrat', sans-serif; margin-bottom: 20px;
+    }
+    .btn-add:hover { background: #b71c1c; }
 
-    /* Fake "Comprados Juntos" */
-    .fbt-box { background: #f9f9f9; padding: 20px; border: 1px dashed #ddd; margin-top: 20px; }
-    .fbt-head { font-size: 12px; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; }
-    .fbt-imgs { display: flex; align-items: center; gap: 10px; opacity: 0.7; }
-    
     @media (max-width: 900px) {
         .shop-container { flex-direction: column; }
-        .shop-sidebar { width: 100%; display: none; /* Ocultar sidebar en móvil para simplificar */ }
+        .shop-sidebar { width: 100%; margin-bottom: 20px; }
         .modal-body { grid-template-columns: 1fr; }
         .modal-gallery { border-right: none; border-bottom: 1px solid #eee; padding: 20px; }
-        .main-img-container { height: 250px; }
-        .modal-content { height: 100%; max-height: 100%; border-radius: 0; }
     }
 </style>
 
 <div class="section-header" style="border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 20px;">
-    <h2 style="font-size: 22px; font-weight: 800; text-transform: uppercase; margin: 0;">Catálogo General</h2>
-    <span style="font-size: 13px; color: #777;">Equipamiento táctico de alto rendimiento</span>
+    <h2 style="font-size: 22px; font-weight: 800; text-transform: uppercase; margin: 0;">{{ t.products_title }}</h2>
 </div>
 
 <div class="shop-container">
     
     <aside class="shop-sidebar">
-        <div class="filter-group">
-            <h4 class="filter-title">Categorías</h4>
-            <ul class="cat-list">
-                <li onclick="window.location.href='/?cat=ofertas'">Ofertas Especiales <i class="fas fa-chevron-right"></i></li>
-                <li onclick="window.location.href='/?cat=escenarios'">Escenarios <i class="fas fa-chevron-right"></i></li>
-                <li onclick="window.location.href='/?cat=armas'">Armas de Entrenamiento <i class="fas fa-chevron-right"></i></li>
-                <li onclick="window.location.href='/?cat=kits'">Kits de Tiro <i class="fas fa-chevron-right"></i></li>
-                <li onclick="window.location.href='/?cat=simuladores'">Simuladores <i class="fas fa-chevron-right"></i></li>
-            </ul>
-        </div>
+        <form action="/" method="GET">
+            
+            <div class="filter-group">
+                <h4 class="filter-title">{{ t.cat_title }}</h4>
+                <ul class="cat-list">
+                    <li><a href="/">Ver Todo</a></li>
+                    {% for cat in categories %}
+                    <li>
+                        <a href="/?cat={{ cat }}">{{ cat }} <i class="fas fa-chevron-right" style="font-size:10px;"></i></a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
 
-        <div class="filter-group">
-            <h4 class="filter-title">Filtrar por Precio</h4>
-            <div class="price-labels">
-                <span>$10 USD</span>
-                <span>$5,000+ USD</span>
+            <div class="filter-group">
+                <h4 class="filter-title">{{ t.price_title }} (USD)</h4>
+                <div class="price-inputs">
+                    <input type="number" name="min_price" class="price-input" placeholder="Min" value="{{ request.args.get('min_price', '') }}">
+                    <span>-</span>
+                    <input type="number" name="max_price" class="price-input" placeholder="Max" value="{{ request.args.get('max_price', '') }}">
+                </div>
+                <input type="hidden" name="cat" value="{{ request.args.get('cat', '') }}">
+                
+                <button type="submit" class="btn-filter">{{ t.apply }}</button>
             </div>
-            <div class="price-range-visual">
-                <div class="price-knob"></div>
-            </div>
-            <button style="width: 100%; background: #222; color: white; border: none; padding: 10px; font-weight: bold; font-size: 12px; cursor: pointer;">APLICAR FILTRO</button>
-        </div>
+
+        </form>
 
         <div class="filter-group">
             <h4 class="filter-title">Estado</h4>
             <label style="display: block; font-size: 13px; margin-bottom: 8px; color: #555;">
-                <input type="checkbox" checked> En Stock (Entrega Inmediata)
-            </label>
-            <label style="display: block; font-size: 13px; color: #555;">
-                <input type="checkbox"> Novedades
+                <input type="checkbox" checked disabled> En Stock
             </label>
         </div>
     </aside>
@@ -163,13 +163,12 @@
     <main class="shop-main">
         <div class="grid">
             {% for p in products %}
-            <article class="product-card" data-cat="{{ p.category|lower }}" data-id="{{ p.id }}" onclick="openModal({{ p.id }})">
+            <article class="product-card" data-id="{{ p.id }}" onclick="openModal({{ p.id }})">
                 <div class="img-box">
                     <img 
                         src="{{ p.images[0] if p.images else 'https://via.placeholder.com/300x300?text=ALPHA' }}" 
                         alt="{{ p.name }}"
                         loading="lazy"
-                        decoding="async"
                     >
                 </div>
                 <div class="info">
@@ -185,7 +184,7 @@
             </article>
             {% else %}
             <div style="grid-column: 1/-1; padding: 50px; text-align: center; border: 2px dashed #eee;">
-                <h3>No hay productos disponibles en esta categoría.</h3>
+                <h3>No hay productos con estos filtros.</h3>
                 <a href="/" style="color: var(--brand-red); font-weight: bold;">Ver todo el catálogo</a>
             </div>
             {% endfor %}
@@ -196,8 +195,8 @@
 <div class="modal" id="productModal">
     <div class="modal-content">
         <div class="modal-head">
+            <div style="font-size: 14px; font-weight: bold; color: #111;">VISTA RÁPIDA</div>
             <span class="close-btn" onclick="closeModal()">&times;</span>
-            <div style="font-size: 14px; font-weight: bold; color: #111;">VISTA RÁPIDA DE PRODUCTO</div>
         </div>
         
         <div class="modal-body">
@@ -205,8 +204,7 @@
                 <div class="main-img-container">
                     <img src="" id="mMainImg" class="main-img-display">
                 </div>
-                <div class="thumbs-container" id="mThumbs">
-                    </div>
+                <div class="thumbs-container" id="mThumbs"></div>
             </div>
 
             <div class="modal-details">
@@ -215,7 +213,6 @@
                 
                 <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
                     <div class="star-rating" id="mStars" style="font-size: 14px;"></div>
-                    <span style="font-size: 12px; color: #666; text-decoration: underline;">Leer reseñas (0)</span>
                 </div>
 
                 <div class="m-sku" id="mSku">SKU: 00000</div>
@@ -223,9 +220,9 @@
                 <div class="m-price" id="mPriceUSD">$0.00</div>
                 <div class="m-cop" id="mPriceCOP">COP $0</div>
 
-                <div class="stock-badge"><i class="fas fa-check-circle"></i> DISPONIBLE EN INVENTARIO</div>
+                <div class="stock-badge"><i class="fas fa-check-circle"></i> DISPONIBLE</div>
 
-                <p id="mSpecs" style="font-size: 14px; color: #555; line-height: 1.6; margin-bottom: 25px; white-space: pre-line;"></p>
+                <p id="mSpecs" style="font-size: 13px; color: #555; line-height: 1.6; margin-bottom: 25px; white-space: pre-line;"></p>
 
                 <div class="qty-row">
                     <span style="font-size: 13px; font-weight: bold;">CANTIDAD:</span>
@@ -236,24 +233,11 @@
                     </div>
                 </div>
 
-                <div class="action-row">
-                    <button class="btn-add"><i class="fas fa-shopping-cart"></i> AÑADIR AL CARRITO</button>
-                    <button class="btn-wish"><i class="far fa-heart"></i> LISTA DE DESEOS</button>
-                </div>
+                <button class="btn-add"><i class="fas fa-shopping-cart"></i> AÑADIR AL CARRITO</button>
 
-                <div style="font-size: 24px; color: #ccc; margin-bottom: 20px;">
+                <div style="font-size: 24px; color: #ccc; margin-top: 10px;">
                     <i class="fab fa-cc-visa"></i> <i class="fab fa-cc-mastercard"></i> <i class="fab fa-cc-amex"></i>
                 </div>
-
-                <div class="fbt-box">
-                    <div class="fbt-head">Frecuentemente comprados juntos:</div>
-                    <div class="fbt-imgs">
-                        <img src="https://via.placeholder.com/50" style="border:1px solid #ddd;">
-                        <span>+</span>
-                        <img src="https://via.placeholder.com/50" style="border:1px solid #ddd;">
-                    </div>
-                </div>
-
             </div>
         </div>
     </div>
@@ -267,20 +251,18 @@
         id: {{ p.id }},
         name: {{ p.name | tojson }},
         cat: {{ p.category | tojson }},
-        specs: {{ p.specs | default('Sin descripción detallada.') | tojson }},
+        specs: {{ p.specs | default('Sin descripción.') | tojson }},
         usd: {{ "{:,.2f}".format(p.price_usd) | tojson }},
         cop: {{ "{:,.0f}".format(p.price_cop) | tojson }},
         images: {{ p.images | tojson }}
     };
     {% endfor %}
 
-    // --- SISTEMA DE ESTRELLAS ALEATORIAS (DETERMINISTA) ---
+    // --- ESTRELLAS ---
     function getStars(id) {
         const ratings = [4, 4.5, 5];
-        // Usar el ID para elegir siempre la misma calificación para el mismo producto
         const index = id % ratings.length;
         const rating = ratings[index];
-        
         let html = '';
         for(let i=1; i<=5; i++) {
             if(i <= rating) html += '<i class="fas fa-star"></i>';
@@ -290,7 +272,6 @@
         return html;
     }
 
-    // Inicializar estrellas en el Grid
     document.addEventListener("DOMContentLoaded", () => {
         for (const [id, p] of Object.entries(productsDB)) {
             const el = document.getElementById(`stars-grid-${id}`);
@@ -298,7 +279,7 @@
         }
     });
 
-    // --- LÓGICA DEL MODAL ---
+    // --- MODAL LÓGICA ---
     const modal = document.getElementById('productModal');
     const mMainImg = document.getElementById('mMainImg');
     const qtyInput = document.getElementById('qtyInput');
@@ -306,20 +287,16 @@
     function openModal(id) {
         const p = productsDB[id];
         if(!p) return;
-
-        // Reset Cantidad
+        
         qtyInput.value = 1;
-
-        // Llenar Textos
         document.getElementById('mTitle').innerText = p.name;
-        document.getElementById('mCat').innerText = p.cat + " / ALPHA GEAR";
+        document.getElementById('mCat').innerText = p.cat;
         document.getElementById('mSku').innerText = `SKU: ALPHA-${1000 + p.id}`;
         document.getElementById('mPriceUSD').innerText = `$${p.usd}`;
         document.getElementById('mPriceCOP').innerText = `Aprox. COP $${p.cop}`;
         document.getElementById('mSpecs').innerText = p.specs;
         document.getElementById('mStars').innerHTML = getStars(p.id);
 
-        // Lógica de Imágenes
         const mThumbs = document.getElementById('mThumbs');
         mThumbs.innerHTML = '';
         
@@ -349,10 +326,8 @@
         document.body.style.overflow = 'auto';
     }
     
-    // Cerrar al hacer click fuera
     window.onclick = (e) => { if(e.target == modal) closeModal(); }
 
-    // Cantidad
     function updateQty(change) {
         let val = parseInt(qtyInput.value);
         val += change;
