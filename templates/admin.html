@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="form-box" style="max-width: 800px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2>Panel de Administración ALPHA</h2>
+        <a href="/logout" style="color: red; text-decoration: underline;">Cerrar Sesión</a>
+    </div>
+
+    <form method="POST" action="/admin">
+        <div class="form-group">
+            <label>Nombre del Producto</label>
+            <input type="text" name="name" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <label>Categoría</label>
+            <select name="category" class="form-control" required>
+                <option value="escenarios">Escenarios</option>
+                <option value="armas">Armas</option>
+                <option value="kits">Kit de Tiro</option>
+                <option value="simuladores">Simuladores</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Especificaciones</label>
+            <textarea name="specs" class="form-control" rows="3" placeholder="Detalles técnicos..."></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>URL de la Imagen</label>
+            <input type="text" name="image_url" class="form-control" placeholder="https://ejemplo.com/foto.jpg" required>
+            <small style="color: #666;">Nota: Usa un enlace directo de ImgBB, Imgur, etc.</small>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div class="form-group">
+                <label>Precio en USD</label>
+                <input type="number" step="0.01" name="price_usd" class="form-control" placeholder="0.00" required>
+            </div>
+            <div class="form-group">
+                <label>Precio COP (Automático)</label>
+                <input type="text" class="form-control" placeholder="Se calculará al guardar" disabled style="background: #eee;">
+            </div>
+        </div>
+
+        <button type="submit" class="btn">Guardar Producto</button>
+    </form>
+</div>
+{% endblock %}

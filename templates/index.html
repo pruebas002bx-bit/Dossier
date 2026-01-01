@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<style>
+    /* Tabs Styles */
+    .tabs-container { display: flex; justify-content: center; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; }
+    .tab-btn {
+        padding: 10px 25px;
+        background: white;
+        border: 1px solid #ddd;
+        font-weight: bold;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+    .tab-btn.active { background: var(--brand-red); color: white; border-color: var(--brand-red); }
+    
+    /* Grid de Productos */
+    .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 30px; }
+    .product-card { background: white; border: 1px solid #eee; transition: 0.3s; display: flex; flex-direction: column; }
+    .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); border-color: #ccc; }
+    .p-img { height: 200px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #fff; }
+    .p-img img { max-height: 100%; max-width: 100%; }
+    .p-info { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
+    .p-cat { color: #888; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 5px; }
+    .p-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 10px; }
+    .p-specs { font-size: 0.9rem; color: #555; margin-bottom: 15px; flex-grow: 1; }
+    .p-price { margin-top: auto; font-weight: 800; color: var(--brand-red); font-size: 1.2rem; }
+    .p-price small { color: #333; font-size: 0.8rem; font-weight: normal; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+    <div class="tabs-container">
+        <button class="tab-btn active" onclick="filterProducts('all')">Todos</button>
+        <button class="tab-btn" onclick="filterProducts('escenarios')">Escenarios</button>
+        <button class="tab-btn" onclick="filterProducts('armas')">Armas</button>
+        <button class="tab-btn" onclick="filterProducts('kits')">Kit de Tiro</button>
+        <button class="tab-btn" onclick="filterProducts('simuladores')">Simuladores</button>
+    </div>
+
+    <div class="product-grid" id="productGrid">
+        {% for product in products %}
+        <article class="product-card" data-category="{{ product.category }}">
+            <div class="p-img">
+                <img src="{{ product.image_url }}" alt="{{ product.name }}" onerror="this.src='https://via.placeholder.com/300?text=ALPHA'">
+            </div>
+            <div class="p-info">
+                <span class="p-cat">{{ product.category }}</span>
+                <h3 class="p-title">{{ product.name }}</h3>
+                <p class="p-specs">{{ product.specs }}</p>
+                <div class="p-price">
+                    USD ${{ product.price_usd }}
+                    <br>
+                    <small>COP ${{ "{:,.0f}".format(product.price_cop) }}</small>
+                </div>
+            </div>
+        </article>
+        {% else %}
+            <p>No hay productos cargados en la base de datos.</p>
+        {% endfor %}
+    </div>
+
+    <script>
+        function filterProducts(category) {
+            // 1. Manejar estilos de botones
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // 2. Filtrar items
+            const items = document.querySelectorAll('.product-card');
+            items.forEach(item => {
+                if (category === 'all' || item.getAttribute('data-category') === category) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+    </script>
+{% endblock %}

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALPHA | Training Simulators</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* ESTILOS GLOBALES (ROJO, NEGRO, BLANCO) */
+        :root {
+            --brand-red: #D32F2F;
+            --brand-black: #0a0a0a;
+            --light-gray: #f4f4f4;
+            --white: #ffffff;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Roboto', sans-serif; background: var(--light-gray); color: var(--brand-black); }
+        a { text-decoration: none; color: inherit; }
+        
+        /* HEADER */
+        .top-bar { background: var(--brand-black); color: white; padding: 10px; text-align: right; font-size: 0.8rem; }
+        .main-header { background: white; padding: 20px; border-bottom: 1px solid #ddd; }
+        .header-flex { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 15px; }
+        .logo-img { height: 60px; }
+
+        /* NAV */
+        .main-nav { background: var(--brand-black); position: sticky; top: 0; z-index: 1000; }
+        .nav-list { display: flex; justify-content: center; list-style: none; }
+        .nav-link { display: block; padding: 18px 30px; color: white; font-weight: 700; text-transform: uppercase; transition: 0.3s; cursor: pointer; }
+        .nav-link:hover, .nav-link.active { background: #222; color: var(--brand-red); border-bottom: 4px solid var(--brand-red); }
+        .nav-link.admin-link { color: #888; font-size: 0.9em; }
+
+        /* CONTENEDOR PRINCIPAL */
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 15px; min-height: 60vh; }
+
+        /* FORMULARIOS (LOGIN/ADMIN) */
+        .form-box { background: white; padding: 40px; max-width: 500px; margin: 0 auto; border-top: 5px solid var(--brand-red); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: bold; }
+        .form-control { width: 100%; padding: 10px; border: 2px solid #ddd; }
+        .btn { background: var(--brand-black); color: white; padding: 12px 20px; border: none; cursor: pointer; text-transform: uppercase; font-weight: bold; width: 100%; }
+        .btn:hover { background: var(--brand-red); }
+
+        /* ALERTA */
+        .alert { padding: 15px; margin-bottom: 20px; color: white; text-align: center; }
+        .alert.error { background: #D32F2F; }
+        .alert.success { background: #2E7D32; }
+
+        /* FOOTER */
+        footer { background: var(--brand-black); color: #888; padding: 40px 0; text-align: center; margin-top: 50px; }
+    </style>
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <div class="top-bar">Envíos Certificados | ALPHA Training</div>
+    
+    <header class="main-header">
+        <div class="header-flex">
+            <a href="/"><img src="https://placehold.co/200x70/ffffff/000000?text=ALPHA&font=roboto" alt="ALPHA" class="logo-img"></a>
+            <div>
+                <i class="fas fa-shopping-cart"></i> Carrito
+            </div>
+        </div>
+    </header>
+
+    <nav class="main-nav">
+        <ul class="nav-list">
+            <li><a href="/" class="nav-link">Catálogo</a></li>
+            <li><a href="{{ url_for('admin_login') }}" class="nav-link admin-link"><i class="fas fa-lock"></i> Admin</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+    <footer>
+        <p>&copy; 2026 ALPHA Training Simulators.</p>
+    </footer>
+</body>
+</html>
