@@ -2,140 +2,146 @@
 
 {% block content %}
 <style>
-    /* --- LAYOUT PRINCIPAL (Sidebar + Grid) --- */
-    .shop-container { display: flex; gap: 30px; align-items: flex-start; margin-top: 20px; }
-    .shop-sidebar { width: 260px; flex-shrink: 0; background: white; border: 1px solid #e5e5e5; padding: 25px; border-radius: 4px; }
+    /* --- ESTRUCTURA --- */
+    .shop-container { display: flex; gap: 40px; align-items: flex-start; margin-top: 10px; }
+    
+    /* Sidebar Fijo y Estilizado */
+    .shop-sidebar { 
+        width: 280px; flex-shrink: 0; 
+        background: white; border: 1px solid #e0e0e0; border-radius: 6px; 
+        padding: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    }
+    
     .shop-main { flex: 1; }
 
-    /* --- SIDEBAR FILTERS (FUNCIONALES) --- */
-    .filter-group { margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #eee; }
+    /* --- SIDEBAR COMPONENTS --- */
+    .filter-group { margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid #f0f0f0; }
     .filter-group:last-child { border-bottom: none; }
-    .filter-title { font-size: 14px; font-weight: 800; text-transform: uppercase; margin-bottom: 15px; color: #111; letter-spacing: 0.5px; }
     
-    .cat-list { list-style: none; padding: 0; }
-    .cat-list li { margin-bottom: 8px; }
+    .filter-title { font-size: 13px; font-weight: 800; text-transform: uppercase; margin-bottom: 15px; color: #111; letter-spacing: 0.5px; }
+    
+    .cat-list { padding: 0; }
+    .cat-list li { margin-bottom: 6px; }
     .cat-list a { 
-        font-size: 13px; color: #555; text-decoration: none; 
-        display: flex; align-items: center; justify-content: space-between; transition: 0.2s; 
-        cursor: pointer;
+        font-size: 14px; color: #555; display: flex; justify-content: space-between; 
+        padding: 8px 10px; border-radius: 4px; transition: 0.2s; 
     }
-    .cat-list a:hover { color: var(--brand-red); font-weight: 600; }
+    .cat-list a:hover, .cat-list a.active { background: #f5f5f5; color: var(--brand-red); font-weight: 600; }
     
-    /* Inputs de Precio */
-    .price-inputs { display: flex; gap: 10px; align-items: center; }
-    .price-input { width: 100%; padding: 8px; border: 1px solid #ccc; font-size: 12px; border-radius: 4px; }
-    .btn-filter { width: 100%; background: #222; color: white; border: none; padding: 10px; margin-top: 15px; font-weight: bold; font-size: 12px; cursor: pointer; text-transform: uppercase; transition: 0.2s; }
+    .price-inputs { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
+    .price-input { width: 100%; padding: 10px; border: 1px solid #ccc; font-size: 13px; border-radius: 4px; text-align: center; }
+    
+    .btn-filter { width: 100%; background: #222; color: white; border: none; padding: 12px; font-weight: bold; font-size: 12px; cursor: pointer; text-transform: uppercase; border-radius: 4px; transition: 0.2s; }
     .btn-filter:hover { background: #000; }
 
-    /* --- GRID DE PRODUCTOS (5 POR FILA) --- */
+    /* --- GRID 5 COLUMNAS --- */
     .grid { 
         display: grid; 
-        /* Ajuste clave: minmax más pequeño permite 5 elementos en contenedores de 1200px+ */
+        /* Con Container de 1500px y Sidebar de 280px, 210px asegura 5 columnas */
         grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); 
-        gap: 20px; 
+        gap: 25px; 
     }
 
-    /* --- TARJETA DE PRODUCTO --- */
     .product-card { 
-        background: white; border: 1px solid #e0e0e0; border-radius: 4px;
+        background: white; border: 1px solid #eee; border-radius: 6px;
         display: flex; flex-direction: column; transition: all 0.3s ease; 
         position: relative; overflow: hidden; cursor: pointer;
     }
-    .product-card:hover { border-color: #999; box-shadow: 0 10px 25px rgba(0,0,0,0.08); transform: translateY(-2px); }
+    .product-card:hover { border-color: #bbb; box-shadow: 0 10px 30px rgba(0,0,0,0.08); transform: translateY(-3px); }
     
     .img-box { 
-        height: 200px; padding: 15px; background: white; position: relative; 
-        display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #f4f4f4;
+        height: 220px; padding: 20px; background: white; 
+        display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #f8f8f8;
     }
     .img-box img { 
         max-width: 100%; max-height: 100%; object-fit: contain; 
-        transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); 
+        transition: transform 0.4s ease; 
     }
-    .product-card:hover .img-box img { transform: scale(1.08); }
+    .product-card:hover .img-box img { transform: scale(1.05); }
 
-    .info { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; text-align: left; }
-    .cat-tag { font-size: 10px; font-weight: 700; color: #888; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 0.5px; }
-    .prod-title { font-size: 14px; font-weight: 700; color: #111; margin-bottom: 8px; line-height: 1.3; height: 38px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+    .info { padding: 18px; flex-grow: 1; display: flex; flex-direction: column; }
+    .cat-tag { font-size: 10px; font-weight: 700; color: #999; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px; }
+    .prod-title { font-size: 14px; font-weight: 700; color: #222; margin-bottom: 8px; line-height: 1.4; height: 40px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+    .star-rating { color: #e3b46d; font-size: 11px; margin-bottom: 12px; }
     
-    .star-rating { color: #e3b46d; font-size: 10px; margin-bottom: 10px; }
-    
-    .price-section { margin-top: auto; border-top: 1px solid #f9f9f9; padding-top: 10px; }
-    .usd-price { font-size: 16px; font-weight: 800; color: #111; font-family: 'Montserrat', sans-serif; }
-    .cop-price { font-size: 11px; color: #777; font-weight: 500; }
+    .price-section { margin-top: auto; border-top: 1px solid #f9f9f9; padding-top: 12px; }
+    .usd-price { font-size: 18px; font-weight: 800; color: var(--brand-red); font-family: 'Montserrat', sans-serif; }
+    .cop-price { font-size: 12px; color: #777; font-weight: 500; margin-top: 2px; }
 
-    /* --- MODAL AVANZADO --- */
-    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); z-index: 5000; padding: 10px; align-items: center; justify-content: center; backdrop-filter: blur(3px); }
+    /* --- MODAL --- */
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 5000; padding: 10px; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
     .modal-content { 
-        background: white; width: 100%; max-width: 1100px; height: 85vh; 
-        display: flex; flex-direction: column; border-radius: 4px; overflow: hidden;
-        box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+        background: white; width: 100%; max-width: 1100px; height: 90vh; 
+        display: flex; flex-direction: column; border-radius: 8px; overflow: hidden;
+        box-shadow: 0 25px 50px rgba(0,0,0,0.5);
     }
-    
-    .modal-head { padding: 15px 25px; border-bottom: 1px solid #eee; position: relative; background: white; display: flex; justify-content: space-between; align-items: center; }
-    .close-btn { font-size: 28px; cursor: pointer; color: #999; line-height: 1; transition: 0.2s; }
+    .modal-head { padding: 15px 30px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: #fff; }
+    .close-btn { font-size: 28px; cursor: pointer; color: #999; transition: 0.2s; }
     .close-btn:hover { color: var(--brand-red); }
     
     .modal-body { display: grid; grid-template-columns: 55% 45%; flex: 1; overflow-y: auto; }
-    
-    .modal-gallery { background: #fff; padding: 30px; display: flex; flex-direction: column; align-items: center; border-right: 1px solid #eee; }
-    .main-img-container { width: 100%; height: 350px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
-    .main-img-display { max-width: 100%; max-height: 100%; object-fit: contain; }
+    .modal-gallery { padding: 40px; border-right: 1px solid #eee; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #fff; }
+    .main-img-display { max-height: 400px; max-width: 100%; object-fit: contain; margin-bottom: 20px; }
     .thumbs-container { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
-    .thumb { width: 60px; height: 60px; border: 1px solid #ddd; padding: 4px; cursor: pointer; object-fit: contain; opacity: 0.7; transition: 0.2s; }
-    .thumb.active, .thumb:hover { border-color: #333; opacity: 1; }
+    .thumb { width: 60px; height: 60px; border: 1px solid #ddd; padding: 5px; cursor: pointer; object-fit: contain; }
+    .thumb.active { border-color: #333; }
 
-    .modal-details { padding: 30px; background: white; }
-    .m-brand { color: #666; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; margin-bottom: 5px; }
-    .m-title { font-size: 24px; font-weight: 800; line-height: 1.2; margin-bottom: 10px; color: #111; font-family: 'Montserrat', sans-serif; }
-    .m-sku { font-size: 12px; color: #888; margin-bottom: 20px; font-family: monospace; }
+    .modal-details { padding: 40px; background: #fff; }
+    .m-brand { color: #888; font-size: 12px; text-transform: uppercase; font-weight: 700; margin-bottom: 5px; }
+    .m-title { font-size: 28px; font-weight: 800; margin-bottom: 10px; line-height: 1.2; }
+    .m-price { font-size: 32px; font-weight: 800; color: var(--brand-red); margin-bottom: 5px; }
     
-    .m-price { font-size: 28px; font-weight: 800; color: var(--brand-red); font-family: 'Montserrat', sans-serif; margin-bottom: 5px; }
-    .m-cop { font-size: 14px; color: #666; margin-bottom: 25px; font-weight: 600; }
-    
-    .stock-badge { display: inline-block; background: #e6f4ea; color: #1e7e34; padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: 700; margin-bottom: 25px; border: 1px solid #c3e6cb; }
-
-    .qty-row { display: flex; align-items: center; margin-bottom: 20px; gap: 15px; }
-    .qty-box { display: flex; border: 1px solid #ccc; height: 45px; }
-    .qty-btn { width: 40px; border: none; background: #f8f8f8; font-weight: bold; cursor: pointer; font-size: 16px; }
-    .qty-input { width: 50px; text-align: center; border: none; border-left: 1px solid #eee; border-right: 1px solid #eee; font-weight: bold; font-size: 16px; }
-
-    /* BOTON ROJO SOLICITADO */
     .btn-add { 
-        width: 100%; background: #D32F2F; color: white; border: none; 
-        font-weight: 800; text-transform: uppercase; font-size: 14px; 
-        cursor: pointer; transition: 0.2s; height: 50px; display: flex; 
+        width: 100%; background: var(--brand-red); color: white; border: none; 
+        font-weight: 800; text-transform: uppercase; font-size: 15px; 
+        cursor: pointer; height: 55px; margin-top: 20px; display: flex; 
         align-items: center; justify-content: center; gap: 10px; 
-        font-family: 'Montserrat', sans-serif; margin-bottom: 20px;
+        font-family: 'Montserrat', sans-serif; border-radius: 4px; transition: 0.3s;
     }
-    .btn-add:hover { background: #b71c1c; }
+    .btn-add:hover { background: var(--brand-dark-red); box-shadow: 0 5px 15px rgba(211, 47, 47, 0.3); }
 
     @media (max-width: 900px) {
         .shop-container { flex-direction: column; }
-        .shop-sidebar { width: 100%; margin-bottom: 20px; }
+        .shop-sidebar { width: 100%; }
         .modal-body { grid-template-columns: 1fr; }
         .modal-gallery { border-right: none; border-bottom: 1px solid #eee; padding: 20px; }
     }
 </style>
 
-<div class="section-header" style="border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 20px;">
-    <h2 style="font-size: 22px; font-weight: 800; text-transform: uppercase; margin: 0;">{{ t.products_title }}</h2>
+<div class="section-header" style="border-bottom: 1px solid #e5e5e5; padding-bottom: 15px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center;">
+    <div>
+        <h2 style="font-size: 24px; font-weight: 800; text-transform: uppercase; margin: 0;">{{ t.products_title }}</h2>
+        {% if request.args.get('q') %}
+        <span style="font-size: 13px; color: #666;">Resultados para: "<strong>{{ request.args.get('q') }}</strong>"</span>
+        {% endif %}
+    </div>
+    <span style="font-size: 12px; color: #888;">Mostrando {{ products|length }} productos</span>
 </div>
 
 <div class="shop-container">
     
     <aside class="shop-sidebar">
-        <form action="/" method="GET">
-            
+        <form action="/" method="GET" id="filterForm">
+            <input type="hidden" name="q" value="{{ request.args.get('q', '') }}">
+
             <div class="filter-group">
                 <h4 class="filter-title">{{ t.cat_title }}</h4>
                 <ul class="cat-list">
-                    <li><a href="/">Ver Todo</a></li>
+                    <li>
+                        <a href="/" class="{{ 'active' if not request.args.get('cat') else '' }}">
+                            Ver Todo <i class="fas fa-chevron-right" style="font-size:10px;"></i>
+                        </a>
+                    </li>
                     {% for cat in categories %}
                     <li>
-                        <a href="/?cat={{ cat }}">{{ cat }} <i class="fas fa-chevron-right" style="font-size:10px;"></i></a>
+                        <a href="/?cat={{ cat }}&min_price={{ request.args.get('min_price','') }}&max_price={{ request.args.get('max_price','') }}&q={{ request.args.get('q','') }}" 
+                           class="{{ 'active' if request.args.get('cat') == cat else '' }}">
+                            {{ cat }} <i class="fas fa-chevron-right" style="font-size:10px;"></i>
+                        </a>
                     </li>
                     {% endfor %}
                 </ul>
+                <input type="hidden" name="cat" value="{{ request.args.get('cat', '') }}">
             </div>
 
             <div class="filter-group">
@@ -145,36 +151,29 @@
                     <span>-</span>
                     <input type="number" name="max_price" class="price-input" placeholder="Max" value="{{ request.args.get('max_price', '') }}">
                 </div>
-                <input type="hidden" name="cat" value="{{ request.args.get('cat', '') }}">
-                
                 <button type="submit" class="btn-filter">{{ t.apply }}</button>
             </div>
-
+            
+            <div class="filter-group">
+                <h4 class="filter-title">Estado</h4>
+                <label style="display: block; font-size: 13px; color: #555; cursor: pointer;">
+                    <input type="checkbox" checked onclick="return false;"> En Stock
+                </label>
+            </div>
         </form>
-
-        <div class="filter-group">
-            <h4 class="filter-title">Estado</h4>
-            <label style="display: block; font-size: 13px; margin-bottom: 8px; color: #555;">
-                <input type="checkbox" checked disabled> En Stock
-            </label>
-        </div>
     </aside>
 
     <main class="shop-main">
         <div class="grid">
             {% for p in products %}
-            <article class="product-card" data-id="{{ p.id }}" onclick="openModal({{ p.id }})">
+            <article class="product-card" onclick="openModal({{ p.id }})">
                 <div class="img-box">
-                    <img 
-                        src="{{ p.images[0] if p.images else 'https://via.placeholder.com/300x300?text=ALPHA' }}" 
-                        alt="{{ p.name }}"
-                        loading="lazy"
-                    >
+                    <img src="{{ p.images[0] if p.images else 'https://via.placeholder.com/300x300?text=ALPHA' }}" loading="lazy" alt="{{ p.name }}">
                 </div>
                 <div class="info">
                     <span class="cat-tag">{{ p.category }}</span>
                     <h3 class="prod-title">{{ p.name }}</h3>
-                    <div class="star-rating" id="stars-grid-{{ p.id }}"></div>
+                    <div class="star-rating" id="stars-{{ p.id }}"></div>
                     
                     <div class="price-section">
                         <div class="usd-price">${{ "{:,.2f}".format(p.price_usd) }}</div>
@@ -183,9 +182,10 @@
                 </div>
             </article>
             {% else %}
-            <div style="grid-column: 1/-1; padding: 50px; text-align: center; border: 2px dashed #eee;">
-                <h3>No hay productos con estos filtros.</h3>
-                <a href="/" style="color: var(--brand-red); font-weight: bold;">Ver todo el catálogo</a>
+            <div style="grid-column: 1/-1; padding: 60px; text-align: center; border: 2px dashed #e0e0e0; border-radius: 8px; background: #fafafa;">
+                <i class="fas fa-search" style="font-size: 40px; color: #ccc; margin-bottom: 20px;"></i>
+                <h3 style="color: #555;">No encontramos productos con estos filtros.</h3>
+                <a href="/" style="display: inline-block; margin-top: 15px; color: var(--brand-red); font-weight: bold; text-decoration: underline;">Limpiar filtros y ver todo</a>
             </div>
             {% endfor %}
         </div>
@@ -195,74 +195,57 @@
 <div class="modal" id="productModal">
     <div class="modal-content">
         <div class="modal-head">
-            <div style="font-size: 14px; font-weight: bold; color: #111;">VISTA RÁPIDA</div>
+            <div style="font-size: 14px; font-weight: bold; text-transform: uppercase;">Detalles del Producto</div>
             <span class="close-btn" onclick="closeModal()">&times;</span>
         </div>
         
         <div class="modal-body">
             <div class="modal-gallery">
-                <div class="main-img-container">
-                    <img src="" id="mMainImg" class="main-img-display">
-                </div>
+                <img src="" id="mMainImg" class="main-img-display">
                 <div class="thumbs-container" id="mThumbs"></div>
             </div>
 
             <div class="modal-details">
                 <div class="m-brand" id="mCat">CATEGORÍA</div>
-                <h2 class="m-title" id="mTitle">Nombre del Producto</h2>
+                <h2 class="m-title" id="mTitle">Nombre</h2>
                 
-                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
                     <div class="star-rating" id="mStars" style="font-size: 14px;"></div>
+                    <span style="font-size: 12px; color: #888;">(Stock Disponible)</span>
                 </div>
 
-                <div class="m-sku" id="mSku">SKU: 00000</div>
-                
                 <div class="m-price" id="mPriceUSD">$0.00</div>
-                <div class="m-cop" id="mPriceCOP">COP $0</div>
+                <div style="font-size: 14px; color: #666; font-weight: 600; margin-bottom: 25px;" id="mPriceCOP">COP $0</div>
 
-                <div class="stock-badge"><i class="fas fa-check-circle"></i> DISPONIBLE</div>
-
-                <p id="mSpecs" style="font-size: 13px; color: #555; line-height: 1.6; margin-bottom: 25px; white-space: pre-line;"></p>
-
-                <div class="qty-row">
-                    <span style="font-size: 13px; font-weight: bold;">CANTIDAD:</span>
-                    <div class="qty-box">
-                        <button class="qty-btn" onclick="updateQty(-1)">-</button>
-                        <input type="text" class="qty-input" value="1" id="qtyInput" readonly>
-                        <button class="qty-btn" onclick="updateQty(1)">+</button>
-                    </div>
+                <div style="background: #f9f9f9; padding: 15px; border-radius: 4px; margin-bottom: 25px;">
+                    <strong style="font-size: 12px; text-transform: uppercase;">Descripción:</strong>
+                    <p id="mSpecs" style="font-size: 13px; color: #555; line-height: 1.6; margin-top: 5px; white-space: pre-line;"></p>
                 </div>
 
                 <button class="btn-add"><i class="fas fa-shopping-cart"></i> AÑADIR AL CARRITO</button>
-
-                <div style="font-size: 24px; color: #ccc; margin-top: 10px;">
-                    <i class="fab fa-cc-visa"></i> <i class="fab fa-cc-mastercard"></i> <i class="fab fa-cc-amex"></i>
-                </div>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    // --- DATABASE JS ---
     const productsDB = {};
     {% for p in products %}
     productsDB[{{ p.id }}] = {
         id: {{ p.id }},
         name: {{ p.name | tojson }},
         cat: {{ p.category | tojson }},
-        specs: {{ p.specs | default('Sin descripción.') | tojson }},
+        specs: {{ p.specs | default('Sin detalles.') | tojson }},
         usd: {{ "{:,.2f}".format(p.price_usd) | tojson }},
         cop: {{ "{:,.0f}".format(p.price_cop) | tojson }},
         images: {{ p.images | tojson }}
     };
     {% endfor %}
 
-    // --- ESTRELLAS ---
     function getStars(id) {
-        const ratings = [4, 4.5, 5];
-        const index = id % ratings.length;
-        const rating = ratings[index];
+        // Generador de estrellas determinista basado en ID
+        const ratings = [4, 4.5, 5, 4.5, 5]; 
+        const rating = ratings[id % ratings.length];
         let html = '';
         for(let i=1; i<=5; i++) {
             if(i <= rating) html += '<i class="fas fa-star"></i>';
@@ -273,25 +256,21 @@
     }
 
     document.addEventListener("DOMContentLoaded", () => {
-        for (const [id, p] of Object.entries(productsDB)) {
-            const el = document.getElementById(`stars-grid-${id}`);
+        for (const id in productsDB) {
+            const el = document.getElementById(`stars-${id}`);
             if(el) el.innerHTML = getStars(id);
         }
     });
 
-    // --- MODAL LÓGICA ---
     const modal = document.getElementById('productModal');
     const mMainImg = document.getElementById('mMainImg');
-    const qtyInput = document.getElementById('qtyInput');
 
     function openModal(id) {
         const p = productsDB[id];
         if(!p) return;
         
-        qtyInput.value = 1;
         document.getElementById('mTitle').innerText = p.name;
         document.getElementById('mCat').innerText = p.cat;
-        document.getElementById('mSku').innerText = `SKU: ALPHA-${1000 + p.id}`;
         document.getElementById('mPriceUSD').innerText = `$${p.usd}`;
         document.getElementById('mPriceCOP').innerText = `Aprox. COP $${p.cop}`;
         document.getElementById('mSpecs').innerText = p.specs;
@@ -325,14 +304,6 @@
         modal.style.display = 'none';
         document.body.style.overflow = 'auto';
     }
-    
     window.onclick = (e) => { if(e.target == modal) closeModal(); }
-
-    function updateQty(change) {
-        let val = parseInt(qtyInput.value);
-        val += change;
-        if(val < 1) val = 1;
-        qtyInput.value = val;
-    }
 </script>
 {% endblock %}

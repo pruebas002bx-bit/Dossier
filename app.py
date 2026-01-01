@@ -49,8 +49,7 @@ def compress_and_upload(file):
         image = Image.open(file)
         if image.mode in ("RGBA", "P"): image = image.convert("RGB")
         img_byte_arr = io.BytesIO()
-        # Calidad reducida al 50%
-        image.save(img_byte_arr, format='JPEG', quality=50, optimize=True)
+        image.save(img_byte_arr, format='JPEG', quality=60, optimize=True)
         img_byte_arr.seek(0)
         
         payload = {'key': IMGBB_API_KEY}
@@ -72,11 +71,10 @@ def translate_text(text, target_lang):
     except:
         return text
 
-# --- DICCIONARIO UI ---
 UI_TRANSLATIONS = {
-    'es': {'offers': 'Ofertas', 'scenarios': 'Escenarios', 'weapons': 'Armas', 'kits': 'Kit de Tiro', 'sims': 'Simuladores', 'cart': 'Carrito', 'admin': 'Admin', 'contact': 'Contacto', 'details': 'Ver Detalles', 'add': 'Añadir', 'desc': 'Descripción', 'ship': 'Envíos Certificados', 'filter_title': 'Filtros', 'cat_title': 'Categorías', 'price_title': 'Rango de Precio', 'apply': 'Aplicar Filtro'},
-    'en': {'offers': 'Offers', 'scenarios': 'Scenarios', 'weapons': 'Weapons', 'kits': 'Shooting Kits', 'sims': 'Simulators', 'cart': 'Cart', 'admin': 'Admin', 'contact': 'Contact', 'details': 'View Details', 'add': 'Add', 'desc': 'Description', 'ship': 'Certified Shipping', 'filter_title': 'Filters', 'cat_title': 'Categories', 'price_title': 'Price Range', 'apply': 'Apply Filter'},
-    'pt': {'offers': 'Ofertas', 'scenarios': 'Cenários', 'weapons': 'Armas', 'kits': 'Kits de Tiro', 'sims': 'Simuladores', 'cart': 'Carrinho', 'admin': 'Admin', 'contact': 'Contato', 'details': 'Ver Detalhes', 'add': 'Adicionar', 'desc': 'Descrição', 'ship': 'Envios Certificados', 'filter_title': 'Filtros', 'cat_title': 'Categorias', 'price_title': 'Faixa de Preço', 'apply': 'Aplicar Filtro'}
+    'es': {'offers': 'Ofertas', 'scenarios': 'Escenarios', 'weapons': 'Armas', 'kits': 'Kit de Tiro', 'sims': 'Simuladores', 'cart': 'Carrito', 'admin': 'Admin', 'contact': 'Contacto', 'details': 'Ver Detalles', 'add': 'Añadir', 'desc': 'Descripción', 'ship': 'Envíos Certificados', 'filter_title': 'Filtros', 'cat_title': 'Categorías', 'price_title': 'Rango de Precio', 'apply': 'Aplicar Filtro', 'search_ph': 'Buscar productos...'},
+    'en': {'offers': 'Offers', 'scenarios': 'Scenarios', 'weapons': 'Weapons', 'kits': 'Shooting Kits', 'sims': 'Simulators', 'cart': 'Cart', 'admin': 'Admin', 'contact': 'Contact', 'details': 'View Details', 'add': 'Add', 'desc': 'Description', 'ship': 'Certified Shipping', 'filter_title': 'Filters', 'cat_title': 'Categories', 'price_title': 'Price Range', 'apply': 'Apply Filter', 'search_ph': 'Search products...'},
+    'pt': {'offers': 'Ofertas', 'scenarios': 'Cenários', 'weapons': 'Armas', 'kits': 'Kits de Tiro', 'sims': 'Simuladores', 'cart': 'Carrinho', 'admin': 'Admin', 'contact': 'Contato', 'details': 'Ver Detalhes', 'add': 'Adicionar', 'desc': 'Descrição', 'ship': 'Envios Certificados', 'filter_title': 'Filtros', 'cat_title': 'Categorias', 'price_title': 'Faixa de Preço', 'apply': 'Aplicar Filtro', 'search_ph': 'Procurar produtos...'}
 }
 
 @app.context_processor
@@ -84,7 +82,6 @@ def inject_globals():
     lang = session.get('lang', 'es')
     return dict(t=UI_TRANSLATIONS.get(lang, UI_TRANSLATIONS['es']), current_lang=lang)
 
-# --- RUTAS ---
 @app.route('/set_language/<lang>')
 def set_language(lang):
     session['lang'] = lang
@@ -96,59 +93,76 @@ def index():
     products = []
     available_categories = []
     
-    # Obtener parámetros de filtro
-    cat_filter = request.args.get('cat', '').lower()
-    min_price = request.args.get('min_price', 0)
-    max_price = request.args.get('max_price', 99999)
-    search_query = request.args.get('q', '').lower()
+    # 1. Obtener parámetros y limpiarlos
+    cat_filter = request.args.get('cat', '').strip()
+    search_query = request.args.get('q', '').strip()
+    
+    try:
+        min_price = float(request.args.get('min_price', 0) or 0)
+        max_price = float(request.args.get('max_price', 999999) or 999999)
+    except ValueError:
+        min_price = 0
+        max_price = 999999
 
     if conn:
-        cur = conn.cursor()
-        
-        # 1. Obtener categorías dinámicas (basadas en lo que existe en DB)
-        cur.execute("SELECT DISTINCT category FROM products ORDER BY category ASC")
-        cats = cur.fetchall()
-        available_categories = [c['category'] for c in cats if c['category']]
+        try:
+            cur = conn.cursor()
+            
+            # 2. Obtener categorías existentes para el sidebar
+            cur.execute("SELECT DISTINCT category FROM products WHERE category IS NOT NULL AND category != '' ORDER BY category ASC")
+            cats = cur.fetchall()
+            available_categories = [c['category'] for c in cats]
 
-        # 2. Construir Query Dinámico para Productos
-        query = "SELECT * FROM products WHERE price_usd >= %s AND price_usd <= %s"
-        params = [min_price, max_price]
+            # 3. Construir Query de Productos (ROBUSTA)
+            query = "SELECT * FROM products WHERE price_usd >= %s AND price_usd <= %s"
+            params = [min_price, max_price]
 
-        if cat_filter and cat_filter != 'ofertas':
-            query += " AND LOWER(category) = %s"
-            params.append(cat_filter)
-        
-        if search_query:
-            query += " AND (LOWER(name) LIKE %s OR LOWER(specs) LIKE %s)"
-            params.append(f"%{search_query}%")
-            params.append(f"%{search_query}%")
+            # Filtro por Categoría (Usando ILIKE para ignorar mayúsculas)
+            if cat_filter:
+                if cat_filter.lower() == 'ofertas':
+                    # Si tienes lógica especial para ofertas, añádela aquí. Si es solo una categoría:
+                    query += " AND category ILIKE %s"
+                    params.append('Ofertas')
+                else:
+                    query += " AND category ILIKE %s"
+                    params.append(cat_filter)
+            
+            # Filtro por Buscador (Nombre o Specs)
+            if search_query:
+                query += " AND (name ILIKE %s OR specs ILIKE %s)"
+                search_term = f"%{search_query}%"
+                params.append(search_term)
+                params.append(search_term)
 
-        query += " ORDER BY id DESC"
-
-        cur.execute(query, tuple(params))
-        products = cur.fetchall()
-        cur.close()
-        conn.close()
+            query += " ORDER BY id DESC"
+            
+            # Ejecutar
+            cur.execute(query, tuple(params))
+            products = cur.fetchall()
+            cur.close()
+        except Exception as e:
+            print(f"Error SQL: {e}")
+        finally:
+            conn.close()
 
     cop_rate = get_usd_to_cop_rate()
     target_lang = session.get('lang', 'es')
 
+    # Procesar resultados
+    processed_products = []
     for p in products:
-        # Precio
-        if p['price_usd']: p['price_cop'] = float(p['price_usd']) * cop_rate
-        else: p['price_cop'] = 0
+        prod = dict(p)
+        prod['price_cop'] = float(prod['price_usd'] or 0) * cop_rate
+        prod['images'] = prod['image_urls'].split(',') if prod['image_urls'] else []
         
-        # Imágenes
-        if p['image_urls']: p['images'] = p['image_urls'].split(',')
-        else: p['images'] = []
-
-        # Traducción
         if target_lang != 'es':
-            p['name'] = translate_text(p['name'], target_lang)
-            p['specs'] = translate_text(p['specs'], target_lang)
-            p['category'] = translate_text(p['category'], target_lang)
+            prod['name'] = translate_text(prod['name'], target_lang)
+            prod['specs'] = translate_text(prod['specs'], target_lang)
+            prod['category'] = translate_text(prod['category'], target_lang)
+        
+        processed_products.append(prod)
 
-    return render_template('index.html', products=products, categories=available_categories)
+    return render_template('index.html', products=processed_products, categories=available_categories)
 
 @app.route('/admin-login', methods=['GET', 'POST'])
 def admin_login():
@@ -156,7 +170,7 @@ def admin_login():
         if request.form['password'] == "1032491753Outlook*":
             session['logged_in'] = True
             return redirect(url_for('admin_dashboard'))
-        flash('Error de contraseña')
+        flash('Contraseña incorrecta')
     return render_template('login.html')
 
 @app.route('/admin', methods=['GET', 'POST'])
@@ -176,7 +190,8 @@ def admin_dashboard():
                 url = compress_and_upload(file)
                 if url: new_urls.append(url)
         
-        final_images = ",".join(new_urls)
+        # Guardar string separado por comas
+        final_images = ",".join(new_urls) if new_urls else ""
 
         conn = get_db_connection()
         if conn:
@@ -186,7 +201,7 @@ def admin_dashboard():
             conn.commit()
             cur.close()
             conn.close()
-            flash('Producto Guardado')
+            flash('Producto Guardado Correctamente')
 
     return render_template('admin.html')
 
