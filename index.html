@@ -189,9 +189,17 @@
                 <h2 class="text-2xl font-bold text-white tracking-wide font-header uppercase">Dossier Técnico Estratégico</h2>
                 <span class="text-[10px] font-mono text-mil-red uppercase tracking-widest">Documento Confidencial de Inversión</span>
             </div>
-            <div class="flex items-center gap-8">
-                <button onclick="document.getElementById('contactModal').classList.remove('hidden'); document.getElementById('contactModal').classList.add('flex');" class="bg-mil-red hover:bg-red-700 text-white px-8 py-3 font-bold uppercase tracking-widest text-sm shadow-lg shadow-red-900/40 border border-red-500 transition-all flex items-center gap-2">
-                    <i data-lucide="phone" class="w-4 h-4"></i> CONTACTANOS
+            
+            <div class="flex items-center gap-4">
+                
+                <button onclick="document.getElementById('contactModal').classList.remove('hidden'); document.getElementById('contactModal').classList.add('flex');" 
+                        class="hidden md:flex items-center gap-2 border border-mil-red text-mil-red hover:bg-mil-red hover:text-white px-6 py-3 font-bold uppercase tracking-widest text-xs transition-all">
+                    <i data-lucide="mail" class="w-4 h-4"></i> CONTÁCTANOS
+                </button>
+
+                <button onclick="window.open('https://wa.me/573133693983?text=Hola,%20estoy%20interesado%20en%20el%20Simulador%20ALPHA%20y%20quisiera%20agendar%20una%20visita%20de%20demostraci%C3%B3n.', '_blank')" 
+                        class="bg-mil-red hover:bg-red-700 text-white px-8 py-3 font-bold uppercase tracking-widest text-sm shadow-[0_0_20px_rgba(220,38,38,0.5)] border border-red-500 transition-all flex items-center gap-2 animate-pulse hover:animate-none">
+                    <i data-lucide="calendar-check" class="w-4 h-4"></i> AGENDAR VISITA
                 </button>
             </div>
         </header>
